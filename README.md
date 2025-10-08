@@ -15,8 +15,6 @@ Additional features include:
 - **Role-based user system** that differentiates permissions between guests, members, and administrators.
 - **Dataset integration** using a curated dataset of more than 100 padel venues and related community data from trusted online sources and manual collection.
 
-Ultimately, **Padelin Aja** is not just a sports information portal, but a digital ecosystem that supports the development of the padel community in Indonesia. It is designed to make local padel information more accessible, help new players find suitable venues and events, and strengthen connections between players and organizers. Through this project, the team hopes to contribute to the visibility and growth of padel as a mainstream sport within the Indonesian sporting landscape.
-
 ---
 
 ## 📊 Dataset Source
