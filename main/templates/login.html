@@ -1,223 +1,208 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-<<<<<<< HEAD
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login</title>
-  <style>
-    body { background: #f7f7f9; font-family: system-ui, sans-serif; }
-    .container { max-width: 400px; margin: 60px auto; background: #fff; padding: 32px; border-radius: 8px; box-shadow: 0 2px 8px #0002; }
-    h2 { margin-top: 0; }
-    label { display: block; margin-bottom: 6px; font-weight: 500; }
-    input { width: 100%; padding: 8px; margin-bottom: 16px; border: 1px solid #ccc; border-radius: 4px; }
-    button { width: 100%; padding: 10px; background: #0b6; color: #fff; border: none; border-radius: 4px; font-size: 1em; cursor: pointer; }
-    .error { color: #b00; margin-bottom: 12px; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2>Login</h2>
-    <form id="loginForm" method="post" action="/login/">
-      <div class="error" id="loginError"></div>
-      <label for="username">Username</label>
-      <input type="text" id="username" name="username" required />
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" required />
-      <button type="submit">Login</button>
-    </form>
-    <div style="margin-top:18px;text-align:center;">
-      <span>Don't have an account?</span>
-      <a href="{% url 'main:register' %}" style="color:#0b6;font-weight:600;text-decoration:underline;">Register here</a>
-    </div>
-  </div>
-  <script>
-    document.getElementById('loginForm').onsubmit = function(e) {
-      e.preventDefault();
-      var errorDiv = document.getElementById('loginError');
-      errorDiv.textContent = '';
-      var data = new FormData(this);
-      fetch(this.action, {
-        method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        body: data
-      })
-      .then(r => r.json())
-      .then(res => {
-        if (res.success) {
-          window.location.href = '/';
-        } else {
-          errorDiv.textContent = res.errors || 'Login failed.';
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PadelinAja — Login</title>
+    {% load static %} {# Load static tag #}
+
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root{
+          --white:#f9f6f6;
+          --purple:#58239f;
+          --yellow:#ffec58;
+          --black:#000000;
+          --muted:#6b7280;
+          --border:#e5e7eb;
+          --ring:#e6e0f4;
+          --shadow:0 10px 30px rgba(0,0,0,.08);
         }
-      });
-    };
-=======
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PadelinAja — Login</title>
-  {% load static %}
-  
-  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;500;700&display=swap" rel="stylesheet">
-  
-  <style>
-    :root{
-      --white:#f9f6f6;
-      --purple:#58239f;
-      --yellow:#ffec58;
-      --black:#000000;
-      --muted:#6b7280;
-      --border:#e5e7eb;
-      --ring:#e6e0f4;
-      --shadow:0 10px 30px rgba(0,0,0,.08);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:'Lato',sans-serif;
-      background:var(--white);
-      color:var(--black);
-    }
-    .page{
-      display:grid;
-      grid-template-columns:1fr min(700px,100%);
-      min-height:100vh;
-      align-items:center;
-    }
-    @media(max-width:960px){
-      .page{grid-template-columns:1fr}
-      .hero{display:none}
-    }
-    .hero{
-      display:flex;align-items:center;justify-content:center;
-    }
-    .hero img{
-      width:min(760px,92%);
-      height:auto;
-      filter:drop-shadow(0 14px 24px rgba(0,0,0,.15));
-    }
-    .panel{
-      display:flex;align-items:center;justify-content:center;
-      padding:48px 24px;
-    }
-    .card{
-      width:min(580px,100%);
-      background:#fff;
-      border-radius:20px;
-      border:1px solid var(--border);
-      box-shadow:var(--shadow);
-      padding:40px 36px;
-    }
-    .header{
-      display:flex;flex-direction:column;align-items:center;text-align:center;
-      margin-bottom:20px;
-    }
-    .brand img{width:52px;height:52px;margin-bottom:8px;}
-    .title{font-size:28px;font-weight:700;margin:0;letter-spacing:0.3px}
-    .sub{color:var(--muted);margin-top:6px;font-size:15px;}
-    .sub a{color:var(--purple);text-decoration:underline;font-weight:600}
-    .grid{display:grid;gap:14px;margin-top:18px}
-    label{display:block;font-weight:600;font-size:13px;color:var(--muted);margin-bottom:6px}
-    .input{
-      display:flex;align-items:center;gap:10px;
-      background:#fff;border:1px solid var(--border);border-radius:12px;
-      padding:12px 14px;
-    }
-    .input:focus-within{border-color:var(--purple);box-shadow:0 0 0 4px var(--ring)}
-    .input input{border:0;outline:0;width:100%;background:transparent;font-size:15px;color:var(--black)}
-    .toggle{border:0;background:transparent;color:var(--muted);font-weight:600;cursor:pointer}
-    .primary{
-      margin-top:10px;width:100%;border:none;border-radius:999px;
-      padding:14px 18px;background:var(--purple);color:var(--yellow);
-      font-size:16px;font-weight:700;cursor:pointer;
-      box-shadow:0 6px 16px rgba(88,35,159,.25);
-      letter-spacing:0.4px;transition:all 0.2s ease-in-out;
-    }
-    .primary:hover{opacity:.9;transform:translateY(-1px);}
-    .error{
-      display:none;color:#b42318;background:#fee4e2;border:1px solid #fecdca;
-      padding:10px 12px;border-radius:10px;margin-bottom:10px;
-    }
-  </style>
+        *{box-sizing:border-box}
+        html,body{height:100%}
+        body{
+          margin:0;
+          font-family:'Lato',sans-serif;
+          background:var(--white);
+          color:var(--black);
+        }
+        .page{
+          display:grid;
+          grid-template-columns: 1fr min(700px,100%); 
+          min-height:100vh;
+          align-items:center;
+        }
+        @media(max-width:960px){
+          .page{grid-template-columns:1fr}
+          .hero{display:none} 
+        }
+
+        .hero{
+          display:flex;align-items:center;justify-content:center;
+          height: 100%; 
+          background-color: #f0f0f0; 
+        }
+        .hero img{
+          width:min(760px,92%);
+          height:auto;
+          filter:drop-shadow(0 14px 24px rgba(0,0,0,.15));
+        }
+        .panel{
+          display:flex;align-items:center;justify-content:center;
+          padding:48px 24px;
+        }
+        .card{
+          width:min(580px,100%);
+          background:#fff;
+          border-radius:20px;
+          border:1px solid var(--border);
+          box-shadow:var(--shadow);
+          padding:40px 36px;
+        }
+        .header{
+          display:flex;flex-direction:column;align-items:center;text-align:center;
+          margin-bottom:20px;
+        }
+        .brand img{width:52px;height:52px;margin-bottom:8px;}
+        .title{font-size:28px;font-weight:700;margin:0;letter-spacing:0.3px}
+        .sub{color:var(--muted);margin-top:6px;font-size:15px;}
+        .sub a{color:var(--purple);text-decoration:underline;font-weight:600}
+        .grid{display:grid;gap:14px;margin-top:18px}
+        label{display:block;font-weight:600;font-size:13px;color:var(--muted);margin-bottom:6px}
+        .input{
+          display:flex;align-items:center;gap:10px;
+          background:#fff;border:1px solid var(--border);border-radius:12px;
+          padding:12px 14px;
+        }
+        .input:focus-within{border-color:var(--purple);box-shadow:0 0 0 4px var(--ring)}
+        .input input{border:0;outline:0;width:100%;background:transparent;font-size:15px;color:var(--black)}
+        .toggle{border:0;background:transparent;color:var(--muted);font-weight:600;cursor:pointer}
+        .primary{
+          margin-top:10px;width:100%;border:none;border-radius:999px;
+          padding:14px 18px;background:var(--purple);color:var(--yellow);
+          font-size:16px;font-weight:700;cursor:pointer;
+          box-shadow:0 6px 16px rgba(88,35,159,.25);
+          letter-spacing:0.4px;transition:all 0.2s ease-in-out;
+        }
+        .primary:hover{opacity:.9;transform:translateY(-1px);}
+        .error{
+          display:none; 
+          color:#b42318;background:#fee4e2;border:1px solid #fecdca;
+          padding:10px 12px;border-radius:10px;margin-bottom:10px;
+          font-size: 0.9em;
+        }
+    </style>
 </head>
 <body>
-  <main class="page">
-    <aside class="hero" aria-hidden="true">
-      <img src="{% static 'main/img/login.png' %}" alt="Padel players illustration">
-    </aside>
+    <main class="page">
+        <aside class="hero" aria-hidden="true">
+            {# Ensure the path to your login image is correct #}
+            <img src="{% static 'image/login.png' %}" alt="Padel players illustration">
+        </aside>
 
-    <section class="panel">
-      <div class="card">
-        <div class="header">
-          <div class="brand">
-            <img src="{% static 'main/img/logo.png' %}" alt="PadelinAja logo">
-          </div>
-          <h1 class="title">Welcome Back!</h1>
-          <div class="sub">Don’t have an account? <a href="{% url 'main:register' %}">Register</a></div>
-        </div>
+        <section class="panel">
+            <div class="card">
+                <div class="header">
+                    <div class="brand">
+                        {# Ensure the path to your logo is correct #}
+                        <img src="{% static 'image/PadelinAja Logo.png' %}" alt="PadelinAja logo">
+                    </div>
+                    <h1 class="title">Welcome Back!</h1>
+                    <div class="sub">Don’t have an account? <a href="{% url 'main:register' %}">Register</a></div>
+                </div>
 
-        <form id="loginForm" class="grid" method="post" action="{% url 'main:login' %}">
-          {% csrf_token %}
-          <div id="loginError" class="error" role="alert"></div>
+                <form id="loginForm" class="grid" method="post" action="{% url 'main:login' %}">
+                    {% csrf_token %} {# Django CSRF token #}
+                    <div id="loginError" class="error" role="alert"></div>
 
-          <div>
-            <label for="id_username">Username</label>
-            <div class="input">
-              <input id="id_username" name="username" type="text" required autocomplete="username" placeholder="Enter your username">
+                    <div>
+                        <label for="id_username">Username</label>
+                        <div class="input">
+                            <input id="id_username" name="username" type="text" required autocomplete="username" placeholder="Enter your username">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="id_password">Password</label>
+                        <div class="input">
+                            <input id="id_password" name="password" type="password" required autocomplete="current-password" placeholder="••••••••">
+                            <button type="button" class="toggle" data-toggle="#id_password">Show</button> {# Default text: Show #}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="primary">Log in</button>
+                </form>
             </div>
-          </div>
+        </section>
+    </main>
 
-          <div>
-            <label for="id_password">Password</label>
-            <div class="input">
-              <input id="id_password" name="password" type="password" required autocomplete="current-password" placeholder="••••••••">
-              <button type="button" class="toggle" data-toggle="#id_password">Hide</button>
-            </div>
-          </div>
+    <script>
+        function getCsrfToken() {
+            const csrfCookie = document.cookie.split('; ').find(row => row.startsWith('csrftoken='));
+            return csrfCookie ? csrfCookie.split('=')[1] : '';
+        }
 
-          <button type="submit" class="primary">Log in</button>
-        </form>
-      </div>
-    </section>
-  </main>
+        const form = document.getElementById('loginForm');
+        const errorBox = document.getElementById('loginError');
 
-  <script>
-    function getCsrf() {
-      const el = document.querySelector('input[name=csrfmiddlewaretoken]');
-      return el ? el.value : '';
-    }
-    const form = document.getElementById('loginForm');
-    const errorBox = document.getElementById('loginError');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault(); 
+                errorBox.style.display = 'none'; 
+                errorBox.textContent = ''; 
 
-    if (form) {
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        errorBox.style.display = 'none';
-        errorBox.textContent = '';
-        const res = await fetch(form.action, {
-          method: 'POST',
-          headers: {'X-Requested-With':'XMLHttpRequest','X-CSRFToken':getCsrf()},
-          body: new FormData(form), credentials: 'same-origin'
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest', 
+                            'X-CSRFToken': getCsrfToken() 
+                        },
+                        body: new FormData(form), 
+                    });
+
+                    if (!response.ok) {
+                        let errorMsg = response.statusText || 'Login failed.';
+                        try {
+                            const errorData = await response.json(); 
+                            errorMsg = errorData.errors || errorMsg;
+                        } catch (jsonError) {
+                        }
+                        throw new Error(errorMsg);
+                    }
+
+                    const data = await response.json(); 
+
+                    if (data.success) {
+                        window.location.href = data.redirect_url || "{% url 'main:show_main' %}"; 
+                    } else {
+                        errorBox.textContent = data.errors || 'Login failed.';
+                        errorBox.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error("Login error:", error);
+                    errorBox.textContent = error.message || 'An unexpected error occurred.';
+                    errorBox.style.display = 'block';
+                }
+            });
+        }
+
+        document.querySelectorAll('.toggle').forEach(btn => {
+            const inputSelector = btn.getAttribute('data-toggle');
+            if (inputSelector) {
+                const input = document.querySelector(inputSelector);
+                if (input) {
+                    btn.addEventListener('click', () => {
+                        const isPassword = input.type === 'password';
+                        input.type = isPassword ? 'text' : 'password';
+                        btn.textContent = isPassword ? 'Hide' : 'Show';
+                    });
+                } else {
+                     console.warn(`Toggle button cannot find input: ${inputSelector}`);
+                }
+            }
         });
-        let data;
-        try { data = await res.json(); }
-        catch { data = { success: false, errors: 'Unexpected response.' }; }
-        if (data.success) {
-          window.location.href = data.redirect_url || "{% url 'main:show_main' %}";
-        } else {
-          errorBox.textContent = data.errors || 'Login failed.';
-          errorBox.style.display = 'block';
-        }
-      });
-    }
-    document.querySelectorAll('.toggle').forEach(btn=>{
-      const input=document.querySelector(btn.getAttribute('data-toggle'));
-      btn.addEventListener('click',()=>{
-        const show=input.type==='password';
-        input.type=show?'text':'password';
-        btn.textContent=show?'Hide':'Show';
-      });
-    });
->>>>>>> tkpbp/radit
-  </script>
+    </script>
 </body>
 </html>

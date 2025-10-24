@@ -1,14 +1,9 @@
-<<<<<<< HEAD
-django
+asgiref==3.10.0
+Django==5.2.7
+sqlparse==0.5.3
+python-dotenv==1.1.1
 gunicorn
 whitenoise
 psycopg2-binary
 requests
 urllib3
-python-dotenv
-=======
-asgiref==3.10.0
-Django==5.2.7
-python-dotenv==1.1.1
-sqlparse==0.5.3
->>>>>>> tkpbp/radit

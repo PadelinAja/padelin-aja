@@ -2,54 +2,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<<<<<<< HEAD
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    {% block meta %} {% endblock meta %}
-</head>
+    <title>Padel In Aja</title> {# Default title, can be overridden #}
 
-<body>
-    {% block content %} {% endblock content %}
-=======
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Padel In Aja</title>
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
-  
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      font-family: 'Lato', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      background-color: #fff; /* White background as per Figma */
-      color: #333;
-      line-height: 1.6;
-    }
-    * {
-      box-sizing: border-box;
-    }
-    a {
-      color: #6A1B9A; /* Your Purple */
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-  </style>
+    {# Google Fonts #}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    {# Basic CSS Reset and Defaults #}
+    <style>
+        body, html {
+          margin: 0;
+          padding: 0;
+          font-family: 'Lato', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+          background-color: #f7f7f9; /* Default light grey background */
+          color: #333;
+          line-height: 1.6;
+        }
+        * {
+          box-sizing: border-box;
+        }
+        a {
+          color: #6A1B9A; /* Default link color (Purple) */
+          text-decoration: none;
+        }
+        a:hover {
+          text-decoration: underline;
+        }
+        /* Add other global styles here if needed */
+    </style>
+
+    {# Allow individual pages to add extra meta tags or stylesheets #}
+    {% block meta %}
+    {% endblock meta %}
+
+    {# Allow individual pages to add extra CSS #}
+    {% block style %}
+    {% endblock style %}
+
 </head>
 <body>
-  
-  {% include 'navbar.html' %}
-  
-  <main>
-    {% block content %}{% endblock %}
-  </main>
-  
-  <script src="{% static 'js/rating.js' %}"></script>
 
->>>>>>> tkpbp/radit
+    {# Include the navigation bar on every page #}
+    {% include 'navbar.html' %}
+
+    {# Main content area for child templates #}
+    <main>
+        {% block content %}
+        {# Child template content goes here #}
+        {% endblock content %}
+    </main>
+
+    {# Optional: Include a footer on every page #}
+    {# {% include 'footer.html' %} #}
+
+    {# Load global JavaScript files if needed #}
+    {# <script src="{% static 'js/main.js' %}"></script> #}
+
+    {# Allow individual pages to add extra scripts #}
+    {% block scripts %}
+    {% endblock scripts %}
+
 </body>
 </html>
