@@ -1,14 +1,7 @@
-"""
-Django settings for padelin_aja project.
-"""
-
 from pathlib import Path
 import os
 from dotenv import load_dotenv
 
-# ───────────────────────────────────────────────
-# Base setup
-# ───────────────────────────────────────────────
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,9 +16,6 @@ ALLOWED_HOSTS = [
     "roben-joseph-padelinaja.pbp.cs.ui.ac.id",
 ]
 
-# ───────────────────────────────────────────────
-# Applications
-# ───────────────────────────────────────────────
 INSTALLED_APPS = [
     'main',
     'django.contrib.admin',
@@ -49,9 +39,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "padelin_aja.urls"
 
-# ───────────────────────────────────────────────
-# Templates
-# ───────────────────────────────────────────────
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -69,9 +56,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "padelin_aja.wsgi.application"
 
-# ───────────────────────────────────────────────
-# Database (PostgreSQL for production / SQLite local)
-# ───────────────────────────────────────────────
 if PRODUCTION:
     DATABASES = {
         "default": {
@@ -94,24 +78,15 @@ else:
         }
     }
 
-# ───────────────────────────────────────────────
-# Authentication & Login flow
-# ───────────────────────────────────────────────
 LOGIN_URL = "/login/"
-LOGOUT_REDIRECT_URL = "/"        # after logout
-LOGIN_REDIRECT_URL = "/"         # after login success
+LOGOUT_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/"
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend"
 ]
 
-# ───────────────────────────────────────────────
-# Email backend (for dev; used by password reset later if added)
-# ───────────────────────────────────────────────
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-# ───────────────────────────────────────────────
-# Password validators
-# ───────────────────────────────────────────────
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -119,26 +94,15 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# ───────────────────────────────────────────────
-# Internationalization
-# ───────────────────────────────────────────────
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = "Asia/Jakarta"  # change from UTC to local for convenience
+TIME_ZONE = "Asia/Jakarta"
 USE_I18N = True
 USE_TZ = True
 
-# ───────────────────────────────────────────────
-# Static files (CSS, JS, images)
-# ───────────────────────────────────────────────
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "main" / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
 STATIC_URL = 'static/'
 
-# Default primary key field type
-# ───────────────────────────────────────────────
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
