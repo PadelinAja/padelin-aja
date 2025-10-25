@@ -142,6 +142,7 @@
         background-color: #5a1683;
         transform: translateY(-2px);
     }
+
     .rating-input .star {
         font-size: 2.5rem;
         color: #ccc;
@@ -230,9 +231,11 @@
 
 <div class="detail-container">
     <div class="detail-grid">
+
         <main class="venue-content">
             <div class="image-gallery {% if venue.image_url_2 or venue.image_url_3 or venue.image_url_4 or venue.image_url_5 %}has-thumbnails{% endif %}">
                 <img src="{{ venue.image_url|default_if_none:'https://via.placeholder.com/800x450?text=Venue+Image' }}" alt="{{ venue.name }} - Main Image" class="gallery-main-image" id="mainGalleryImage">
+
                 {% if venue.image_url_2 %}<img src="{{ venue.image_url_2 }}" alt="{{ venue.name }} thumbnail 2" class="gallery-thumb">{% endif %}
                 {% if venue.image_url_3 %}<img src="{{ venue.image_url_3 }}" alt="{{ venue.name }} thumbnail 3" class="gallery-thumb">{% endif %}
                 {% if venue.image_url_4 %}<img src="{{ venue.image_url_4 }}" alt="{{ venue.name }} thumbnail 4" class="gallery-thumb">{% endif %}
@@ -275,28 +278,32 @@
 
             <div class="venue-section" id="reviews-section">
                 <h2>Reviews</h2>
-                {% if not user.is_authenticated %}
-                <form id="rating-form" class="review-card">
-                    {% csrf_token %}
-                    <h3 style="margin-top:0;">Leave a Review</h3>
-                    <p>Share your experience at this venue.</p>
-                    <div class="form-group" style="margin-bottom: 16px;">
-                        <label for="comment-name" class="form-group-label">Your Name:</label>
-                        <input type="text" id="comment-name" name="name" class="review-form-textarea" placeholder="Enter your name" required>
-                    </div>
-                    <div id="user-rating" class="rating-input" 
-                         data-type="venue" 
-                         data-id="{{ venue.id }}"
-                         data-rate-url="{% url 'main:rate_item' %}">
-                        <span class="star" data-score="1">☆</span>
-                        <span class="star" data-score="2">☆</span>
-                        <span class="star" data-score="3">☆</span>
-                        <span class="star" data-score="4">☆</span>
-                        <span class="star" data-score="5">☆</span>
-                    </div>
-                    <textarea id="comment-text" name="comment" rows="4" placeholder="Write your comment..." class="review-form-textarea"></textarea>
-                    <button type="submit" class="book-now-btn review-form-btn">Submit Review</button>
-                </form>
+
+                {% if not user.is_authenticated %} <form id="rating-form" class="review-card">
+                        {% csrf_token %}
+                        <h3 style="margin-top:0;">Leave a Review</h3>
+                        <p>Share your experience at this venue.</p>
+
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label for="comment-name" class="form-group-label">Your Name:</label>
+                            <input type="text" id="comment-name" name="name" class="review-form-textarea" placeholder="Enter your name" required>
+                        </div>
+
+                        <div id="user-rating" class="rating-input"
+                             data-type="venue"
+                             data-id="{{ venue.id }}"
+                             data-rate-url="{% url 'main:rate_item' %}">
+                            <span class="star" data-score="1">☆</span>
+                            <span class="star" data-score="2">☆</span>
+                            <span class="star" data-score="3">☆</span>
+                            <span class="star" data-score="4">☆</span>
+                            <span class="star" data-score="5">☆</span>
+                        </div>
+
+                        <textarea id="comment-text" name="comment" rows="4" placeholder="Write your comment..." class="review-form-textarea"></textarea>
+
+                        <button type="submit" class="book-now-btn review-form-btn">Submit Review</button>
+                    </form>
                 {% else %}
                     <div class="review-card">
                         <p>Logged-in publishers cannot leave reviews.</p>
@@ -327,12 +334,14 @@
                     {% endfor %}
                 </div>
             </div>
-        </main> 
+
+        </main>
+
         <aside class="sidebar">
             <div class="sidebar-card">
                 <div class="price">Start From</div>
                 <div class="price-value">{{ venue.price_range|default:'Price N/A' }}</div>
-                <button class="book-now-btn">Book Now</button> 
+                <button class="book-now-btn">Book Now</button>
             </div>
         </aside>
     </div>
