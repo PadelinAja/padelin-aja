@@ -16,7 +16,6 @@
         grid-template-columns: 2fr 1fr;
         gap: 40px;
     }
-
     .image-gallery {
         display: grid;
         grid-template-columns: 1fr;
@@ -46,7 +45,6 @@
     .gallery-thumb:hover {
         opacity: 0.8;
     }
-
     .venue-info h1 {
         font-size: 2.2rem;
         font-weight: 900;
@@ -76,7 +74,6 @@
     .venue-location {
         font-weight: 600;
     }
-
     .venue-section {
         margin-top: 32px;
     }
@@ -106,7 +103,6 @@
     .contact-info li a:hover {
         text-decoration: underline;
     }
-
     .sidebar-card {
         background: #fff;
         border: 1px solid #eee;
@@ -157,7 +153,6 @@
     .rating-input .star:hover ~ .star { color: #ccc; }
     .rating-input .star.selected,
     .rating-input .star.hovered { color: #FFC107; }
-
     .review-card {
         border: 1px solid #eee;
         border-radius: 8px;
@@ -216,7 +211,6 @@
         font-weight: 700;
         margin-bottom: 6px;
     }
-
     @media (max-width: 900px) {
         .detail-grid {
             grid-template-columns: 1fr;
@@ -280,7 +274,6 @@
                         {% endif %}
                     </ul>
                 </div>
-
             </div>
 
             <div class="venue-section" id="reviews-section">
@@ -316,7 +309,6 @@
                         <p>Logged-in publishers cannot leave reviews.</p>
                     </div>
                 {% endif %}
-
                 <div class="review-list">
                     {% for review in reviews %}
                         <div class="review-card">
@@ -352,7 +344,6 @@
                 <button class="book-now-btn">Book Now</button>
             </div>
         </aside>
-
     </div>
 </div>
 
@@ -360,13 +351,11 @@
     document.addEventListener('DOMContentLoaded', function() {
         const mainImage = document.getElementById('mainGalleryImage');
         const thumbnails = document.querySelectorAll('.gallery-thumb');
-
         thumbnails.forEach(thumb => {
             thumb.addEventListener('click', function() {
                 mainImage.src = this.src;
             });
         });
-
     });
 </script>
 
