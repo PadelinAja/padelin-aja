@@ -1,0 +1,260 @@
+{% load static %}
+{% load humanize %}
+
+<style>
+  .card {
+    background: #fff;
+    border-radius: 8px;
+    transition: box-shadow 0.3s ease;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .card-thumbnail {
+    position: relative;
+    padding-top: 56.25%;
+    background-color: #eee;
+  }
+  .card-thumbnail img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .card-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: #6A1B9A;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .card-type-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255,255,255,0.8);
+    color: #333;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: capitalize;
+  }
+
+  .card-content {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-meta {
+    font-size: 0.85rem;
+    color: #777;
+    margin-bottom: 8px;
+  }
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #222;
+    margin: 0 0 12px 0;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+   .card-title a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.2s ease;
+   }
+  .card-title a:hover {
+    color: #6A1B9A;
+    text-decoration: none;
+  }
+  .card-description {
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .card-description .venue-detail { display: block; margin-bottom: 4px; font-size: 0.9rem; }
+  .card-description .venue-venue { display: block; margin-top: 8px; font-size: 0.9rem; color: #777; }
+
+  .card-rating {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    color: #666;
+  }
+  .card-rating-stars {
+    color: #f5c518;
+    margin-right: 8px;
+    letter-spacing: 1px;
+  }
+
+  .card-footer {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 16px;
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .card-read-more {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #6A1B9A;
+    text-decoration: none;
+  }
+   .card-read-more:hover {
+       text-decoration: underline;
+   }
+  .card-actions {
+    display: flex;
+    gap: 12px;
+  }
+  .card-actions button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  .card-edit-btn { color: #555; }
+  .card-edit-btn:hover { background-color: #eee; color: #333; }
+  .card-delete-btn { color: #D9534F; }
+  .card-delete-btn:hover { background-color: #fdd; color: #D9534F; }
+
+</style>
+
+<article class="card" data-type="{{ item.type }}" data-id="{{ item.id }}">
+
+  <div class="card-thumbnail">
+    {% if item.thumbnail %}
+      <img src="{{ item.thumbnail }}" alt="{% if item.name %}{{ item.name }}{% elif item.title %}{{ item.title }}{% endif %} Thumbnail">
+    {% else %}
+      <div style="width:100%; height:100%; background:#eee;"></div>
+    {% endif %}
+
+    <div class="card-badge">
+      {% if item.type == 'article' and item.category %}
+        {{ item.category }}
+      {% elif item.type == 'venue' and item.city %}
+        {{ item.city }}
+      {% elif item.type == 'event' and item.date %}
+        {{ item.date|date:"M j, Y" }}
+      {% else %}
+        Info
+      {% endif %}
+    </div>
+
+    <div class="card-type-badge">
+      {{ item.type }}
+    </div>
+  </div>
+
+  <div class="card-content">
+
+    <div class="card-meta">
+      {% if item.created_at %}
+        <time datetime="{{ item.created_at|date:'c' }}">{{ item.created_at|date:"M j, Y" }}</time>
+      {% elif item.date %}
+        <time datetime="{{ item.date|date:'c' }}">{{ item.date|date:"M j, Y" }}</time>
+      {% elif item.type == 'venue' and item.city %}
+        <span>📍 {{ item.city }}</span>
+      {% endif %}
+      {% if item.user %}
+        <span class="card-meta-user"> • by {{ item.user.username }}</span>
+      {% endif %}
+    </div>
+
+    <h3 class="card-title">
+      <a href="{% if item.detail_url_name %}{% url item.detail_url_name item.id %}{% else %}#{% endif %}">
+        
+        {% if item.name %}{{ item.name }}{% elif item.title %}{{ item.title }}{% else %}No Title{% endif %}
+
+      </a>
+    </h3>
+
+    <p class="card-description">
+      {% if item.type == 'article' and item.content %}
+        {{ item.content|striptags|truncatewords:20 }}
+      {% elif item.type == 'event' and item.description %}
+        {{ item.description|striptags|truncatewords:20 }}
+      {% elif item.type == 'venue' %}
+        {% if item.address %}<span class="venue-detail">📍 {{ item.address }}</span>{% endif %}
+        {% if item.contact %}<span class="venue-detail">📞 {{ item.contact }}</span>{% endif %}
+        {% if item.price_range %}<span class="venue-detail">💰 {{ item.price_range }}</span>{% endif %}
+        {% if item.website %}
+          <span class="venue-detail">🔗
+            <a href="{{ item.website }}" target="_blank" rel="noopener noreferrer">
+              {{ item.website|truncatechars:30 }}
+            </a>
+          </span>
+        {% endif %}
+        {% if not item.address and not item.contact and not item.website and not item.price_range %}
+          No address or contact information provided.
+        {% endif %}
+      {% else %}
+          Description not available.
+      {% endif %}
+      {% if item.type == 'event' and item.venue %}
+        <span class="venue-venue">📍 Venue: {{ item.venue.name }}</span>
+      {% endif %}
+    </p>
+
+    {% if item.avg_rating %}
+      <div class="card-rating">
+        <span class="card-rating-stars">
+          {% for i in "12345" %}
+            {% if forloop.counter <= item.avg_rating|floatformat:0 %}★{% else %}☆{% endif %}
+          {% endfor %}
+        </span>
+        <span>{{ item.avg_rating }}/5</span>
+      </div>
+    {% endif %}
+
+    <div class="card-footer">
+      <a href="{% if item.detail_url_name %}{% url item.detail_url_name item.id %}{% else %}#{% endif %}" class="card-read-more">
+        Read more →
+      </a>
+      {% if user.is_authenticated and item.user == user %}
+        <div class="card-actions">
+          <button class="card-edit-btn edit-btn"
+                  data-type="{{ item.type }}" data-id="{{ item.id }}">
+            Edit
+          </button>
+          <button class="card-delete-btn delete-btn"
+                  data-type="{{ item.type }}" data-id="{{ item.id }}">
+            Delete
+          </button>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</article>
