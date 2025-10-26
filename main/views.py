@@ -149,6 +149,7 @@ def show_venue(request, id):
     }
     return render(request, "venue_detail.html", context)
 
+@login_required
 def ajax_venue_form(request):
     if request.method == 'POST':
         form = VenueForm(request.POST)
@@ -214,6 +215,7 @@ def show_article(request, id):
     context = {'article': article, 'avg_rating': round(avg_rating, 1), 'active_page': 'blogs'}
     return render(request, "article_detail.html", context)
 
+@login_required
 def ajax_article_form(request):
     if request.method == 'POST':
         form = ArticleForm(request.POST)
@@ -275,6 +277,7 @@ def show_event(request, id):
     context = {'event': event, 'avg_rating': round(avg_rating, 1), 'active_page': 'events'}
     return render(request, "event_detail.html", context)
 
+@login_required
 def ajax_event_form(request):
     if request.method == 'POST':
         form = EventForm(request.POST)
