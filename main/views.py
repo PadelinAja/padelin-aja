@@ -1,238 +1,219 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, Http404
 from django.template.loader import render_to_string
-from main.forms import VenueForm, ArticleForm, EventForm
-from main.models import Venue, Article, Events
-<<<<<<< HEAD
-=======
-from main.models import Venue, Article, Events, Rating
->>>>>>> tkpbp/radit
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from django.utils import timezone
-<<<<<<< HEAD
 from django.db.models import Avg, Q
 from django.contrib.contenttypes.models import ContentType
-from main.models import Rating
-=======
-from django.db.models import Avg
-from django.contrib.contenttypes.models import ContentType
-from main.models import Rating
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-from django.db import models
->>>>>>> tkpbp/radit
+
+from main.forms import VenueForm, ArticleForm, EventForm
+
+from main.models import Venue, Article, Events, Rating
+
+from django.utils import timezone
+
 
 
 def show_main(request):
-    venues = Venue.objects.all()
-    articles = Article.objects.all()
-    events = Events.objects.all()
-    # Build unified items list
     items = []
+    top_venues = []
+    
+    content_type_article = ContentType.objects.get_for_model(Article)
+    content_type_venue = ContentType.objects.get_for_model(Venue)
+    content_type_event = ContentType.objects.get_for_model(Events)
+
+    articles = Article.objects.all().order_by('-published_date')
+    venues = Venue.objects.all()
+    events = Events.objects.all().order_by('-date')
+
     for a in articles:
-        avg_rating = Rating.objects.filter(
-        content_type=ContentType.objects.get_for_model(Article),
-        object_id=a.id
-        ).aggregate(avg=Avg('score'))['avg'] or 0
+        avg_rating = Rating.objects.filter(content_type=content_type_article, object_id=a.id).aggregate(avg=Avg('score'))['avg'] or 0
         items.append({
-            'id': a.id,
-            'type': 'article',
-            'title': a.title,
-            'content': a.content,
-            'category': a.category,
-            'created_at': a.published_date,
-            'thumbnail': getattr(a, 'image_url', None),
-            'user': getattr(a, 'user', None),
-            'detail_url': f"/article/{a.id}/",
+            'id': a.id, 'type': 'article', 'title': a.title, 'content': a.content, 'category': a.category,
+            'created_at': a.published_date, 'thumbnail': getattr(a, 'image_url', None), 'user': a.user,
+            'detail_url_name': 'main:show_article',
             'avg_rating': round(avg_rating, 1),
         })
+        
     for v in venues:
-        avg_rating = Rating.objects.filter(
-        content_type=ContentType.objects.get_for_model(Venue),
-        object_id=v.id
-        ).aggregate(avg=Avg('score'))['avg'] or 0
-        items.append({
-            'id': v.id,
-            'type': 'venue',
-            'name': v.name,
-            'city': v.city,
-            'address': v.address,
-            'contact': v.contact,
-            'website': v.website,
-            'thumbnail': getattr(v, 'image_url', None),
-            'user': getattr(v, 'user', None),
-            'detail_url': f"/venue/{v.id}/",
+        avg_rating = Rating.objects.filter(content_type=content_type_venue, object_id=v.id).aggregate(avg=Avg('score'))['avg'] or 0
+        
+        venue_dict = {
+            'id': v.id, 'type': 'venue', 'name': v.name, 'city': v.city, 'address': v.address,
+            'contact': v.contact, 'website': v.website,
+            'thumbnail': getattr(v, 'image_url', None), 'user': v.user,
+            'detail_url_name': 'main:show_venue',
             'avg_rating': round(avg_rating, 1),
-        })
+            'price_range': getattr(v, 'price_range', None),
+            'facilities': getattr(v, 'facilities', None),
+        }
+        
+        top_venues.append(venue_dict)
+        items.append(venue_dict)
+
     for e in events:
-        avg_rating = Rating.objects.filter(
-        content_type=ContentType.objects.get_for_model(Events),
-        object_id=e.id
-        ).aggregate(avg=Avg('score'))['avg'] or 0
+        avg_rating = Rating.objects.filter(content_type=content_type_event, object_id=e.id).aggregate(avg=Avg('score'))['avg'] or 0
         items.append({
-            'id': e.id,
-            'type': 'event',
-            'name': e.name,
-            'description': e.description,
-            'date': e.date,
-            'venue': e.venue,
-            'thumbnail': getattr(e, 'image_url', None),
-            'user': getattr(e, 'user', None),
-            'detail_url': f"/event/{e.id}/",
+            'id': e.id, 'type': 'event', 'name': e.name, 'description': e.description,
+            'date': e.date, 'venue': e.venue,
+            'thumbnail': getattr(e, 'image_url', None), 'user': e.user,
+            'detail_url_name': 'main:show_event',
             'avg_rating': round(avg_rating, 1),
         })
-    # Sort by created_at/date descending
+
     items.sort(key=lambda x: x.get('created_at', x.get('date', timezone.now())), reverse=True)
+
     context = {
-        'npm': '2206081534',
-        'name': 'Roben Joseph',
-        'class': 'PBP A',
         'items': items,
+        'top_venues': top_venues,
         'user': request.user,
-<<<<<<< HEAD
-=======
-        'active_page': 'home', # Added for navbar highlighting
->>>>>>> tkpbp/radit
+        'active_page': 'home',
     }
     return render(request, "main.html", context)
 
-# Venue views
+@login_required
 def create_venue(request):
-    form = VenueForm(request.POST or None)
-
-    if form.is_valid() and request.method == "POST":
-        form.save()
-        return redirect('main:show_main')
-
-    context = {'form': form}
+    if request.method == "POST":
+        form = VenueForm(request.POST)
+        if form.is_valid():
+            venue = form.save(commit=False)
+            venue.user = request.user
+            venue.save()
+            return redirect('main:show_venues')
+    else:
+        form = VenueForm()
+    context = {'form': form, 'active_page': 'venues'}
     return render(request, "create_venue.html", context)
 
-def show_venue(request, id):
-    # Get the venue or return 404 if not found
-    venue = get_object_or_404(Venue, pk=id)
-
-    # Calculate average rating for this venue
-    avg_rating = Rating.objects.filter(
-        content_type=ContentType.objects.get_for_model(Venue),
-        object_id=venue.id
-    ).aggregate(avg=Avg('score'))['avg'] or 0
-
-    context = {
-        'venue': venue,
-        'avg_rating': round(avg_rating, 1),
-<<<<<<< HEAD
-=======
-        'active_page': 'venues', # Added for navbar highlighting
->>>>>>> tkpbp/radit
-    }
-
-    return render(request, "venue_detail.html", context)
-
-<<<<<<< HEAD
-=======
-# In main/views.py
-
 def show_venues(request):
-    # --- SEARCH LOGIC START ---
     query = request.GET.get('q', '')
     location = request.GET.get('location', '')
     price = request.GET.get('price', '')
 
     venue_list = Venue.objects.all()
-
     if query:
-        venue_list = venue_list.filter(name__icontains=query) 
-    
+        venue_list = venue_list.filter(name__icontains=query)
     if location:
-        venue_list = venue_list.filter(models.Q(city__icontains=location) | models.Q(address__icontains=location))
-
+        venue_list = venue_list.filter(Q(city__icontains=location) | Q(address__icontains=location))
     if price:
         venue_list = venue_list.filter(price_range__icontains=price)
-        
-    # --- SEARCH LOGIC END ---
 
     items = []
-    for v in venue_list: # Loop through the *filtered* list
-        avg_rating = Rating.objects.filter(
-            content_type=ContentType.objects.get_for_model(Venue),
-            object_id=v.id
-        ).aggregate(avg=Avg('score'))['avg'] or 0
-        
+    
+    content_type_venue = ContentType.objects.get_for_model(Venue)
+    
+    for v in venue_list:
+        avg_rating = Rating.objects.filter(content_type=content_type_venue, object_id=v.id).aggregate(avg=Avg('score'))['avg'] or 0
         items.append({
-            'id': v.id,
-            'type': 'venue',
-            'name': v.name,
-            'city': v.city,
+            'id': v.id, 
+            'type': 'venue', 
+            'name': v.name, 
+            'city': v.city, 
             'address': v.address,
-            'thumbnail': getattr(v, 'image_url', None),
-            'detail_url': f"/venues/{v.id}/",
+            'thumbnail': getattr(v, 'image_url', None), 
+            'user': v.user,
             'avg_rating': round(avg_rating, 1),
-            'price_range': v.price_range, 
-            'user': v.user, 
+            'detail_url_name': 'main:show_venue', 
+            'price_range': getattr(v, 'price_range', None), 
         })
 
     context = {
-        'items': items,
-        'user': request.user,
-        'active_page': 'venues', 
-        # --- PASS SEARCH TERMS BACK TO TEMPLATE ---
-        'search_query': query,
-        'search_location': location,
+        'items': items, 'user': request.user, 'active_page': 'venues',
+        'search_query': query, 
+        'search_location': location, 
         'search_price': price,
     }
     return render(request, "venues.html", context)
->>>>>>> tkpbp/radit
 
-# Article views
-def create_article(request):
-    form = ArticleForm(request.POST or None)
+def show_venue(request, id):
+    venue = get_object_or_404(Venue, pk=id)
+    content_type_venue = ContentType.objects.get_for_model(Venue)
 
-    if form.is_valid() and request.method == "POST":
-        article = form.save(commit=False)
-        article.user = request.user   # ✅ attach logged-in user
-        article.save()
-        return redirect('main:show_main')
+    avg_rating = Rating.objects.filter(
+        content_type=content_type_venue, object_id=venue.id
+    ).aggregate(avg=Avg('score'))['avg'] or 0
 
-    context = {'form': form}
-    return render(request, "create_article.html", context)
+    reviews = Rating.objects.filter(
+        content_type=content_type_venue, object_id=venue.id
+    ).order_by('-created_at')
 
-<<<<<<< HEAD
-def article_list_view(request):
-    all_articles = Article.objects.all().order_by('-published_date')
     context = {
-        'articles': all_articles,
+        'venue': venue,
+        'avg_rating': round(avg_rating, 1),
+        'active_page': 'venues',
+        'reviews': reviews
     }
+    return render(request, "venue_detail.html", context)
+
+def ajax_venue_form(request):
+    if request.method == 'POST':
+        form = VenueForm(request.POST)
+        if form.is_valid():
+            venue = form.save(commit=False)
+            if request.user.is_authenticated:
+                 venue.user = request.user
+            venue.save()
+            return JsonResponse({'success': True})
+        return JsonResponse({'success': False, 'errors': form.errors.as_json()}, status=400)
+    else:
+        form = VenueForm()
+        try:
+            html = render_to_string('partials/venue_form.html', {'form': form}, request=request)
+            return JsonResponse({'html': html})
+        except Exception as e:
+            print(f"Error rendering venue form: {e}")
+            return JsonResponse({'error': 'Could not load form template.'}, status=500)
+
+def article_list(request):
+    search_query = request.GET.get('q', '')
+    category_filter = request.GET.get('category', '')
+
+    articles = Article.objects.all().order_by('-published_date')
+
+    if search_query:
+        articles = articles.filter(
+            Q(title__icontains=search_query) |
+            Q(content__icontains=search_query)
+        )
+
+    if category_filter:
+        articles = articles.filter(category=category_filter)
+
+    context = {
+        'articles': articles,
+        'search_query': search_query,
+        'category_filter': category_filter,
+        'active_page': 'blogs'
+    }
+    
     return render(request, 'article_page.html', context)
 
-=======
->>>>>>> tkpbp/radit
-def show_article(request, id):
-    article = get_object_or_404(Article, pk=id)
-    avg_rating = Rating.objects.filter(
-        content_type=ContentType.objects.get_for_model(Article),
-        object_id=article.id
-    ).aggregate(avg=Avg('score'))['avg'] or 0
-    context = {'article': article, 'avg_rating': round(avg_rating, 1)}
-    return render(request, "article_detail.html", context)
-
-
-def ajax_article_form(request):
-    if request.method == 'POST':
+@login_required
+def create_article(request):
+    if request.method == "POST":
         form = ArticleForm(request.POST)
         if form.is_valid():
             article = form.save(commit=False)
             article.user = request.user
             article.save()
-            return JsonResponse({'success': True})
-        return JsonResponse({'success': False, 'errors': form.errors.as_text()})
+            return redirect('main:article_list')
     else:
         form = ArticleForm()
-        html = render_to_string('partials/article_form.html', {'form': form}, request=request)
-        return HttpResponse(html)
+    context = {'form': form, 'active_page': 'blogs'}
+    return render(request, "create_article.html", context)
 
-<<<<<<< HEAD
+def show_article(request, id):
+    article = get_object_or_404(Article, pk=id)
+    avg_rating = Rating.objects.filter(
+        content_type=ContentType.objects.get_for_model(Article), object_id=article.id
+    ).aggregate(avg=Avg('score'))['avg'] or 0
+    context = {'article': article, 'avg_rating': round(avg_rating, 1), 'active_page': 'blogs'}
+    return render(request, "article_detail.html", context)
+
 def ajax_article_form(request):
     if request.method == 'POST':
         form = ArticleForm(request.POST)
@@ -243,147 +224,111 @@ def ajax_article_form(request):
             article.save()
             return JsonResponse({'success': True})
         else:
-            return JsonResponse({'success': False, 'errors': form.errors.as_json()})
-    else:
+            return JsonResponse({'success': False, 'errors': form.errors.as_json()}, status=400)
+    else: 
         form = ArticleForm()
         try:
             html = render_to_string('partials/article_form.html', {'form': form}, request=request)
             return JsonResponse({'html': html})
         except Exception as e:
-            print(f"Error rendering article form: {e}")
+            print(f"Error rendering article form template: {e}")
             return JsonResponse({'error': 'Could not load form template.'}, status=500)
 
-# Event views
 def event_page(request):
-    queryset = Events.objects.all().order_by('-date') 
-
+    queryset = Events.objects.all().order_by('-date')
     search_query = request.GET.get('q', '')
     city_filter = request.GET.get('city', '')
     price_filter = request.GET.get('price', '')
-
     if search_query:
-        queryset = queryset.filter(
-            Q(name__icontains=search_query) | 
-            Q(description__icontains=search_query)
-        )
-
+        queryset = queryset.filter(Q(name__icontains=search_query) | Q(description__icontains=search_query))
     if city_filter:
         queryset = queryset.filter(venue__city__iexact=city_filter)
-
     if price_filter:
-        if price_filter == '<100k':
-            queryset = queryset.filter(price__lt=100000)
-        elif price_filter == '100k-200k':
-            queryset = queryset.filter(price__gte=100000, price__lte=200000)
-        elif price_filter == '>200k':
-            queryset = queryset.filter(price__gt=200000)
-
+        if price_filter == '<100k': queryset = queryset.filter(price__lt=100000)
+        elif price_filter == '100k-200k': queryset = queryset.filter(price__gte=100000, price__lte=200000)
+        elif price_filter == '>200k': queryset = queryset.filter(price__gt=200000)
     context = {
-        'events': queryset,
-        'search_query': search_query,
-        'city_filter': city_filter,
-        'price_filter': price_filter,
+        'events': queryset, 'active_page': 'events',
+        'search_query': search_query, 'city_filter': city_filter, 'price_filter': price_filter,
     }
     return render(request, 'event_page.html', context)
 
-=======
-# Event views
->>>>>>> tkpbp/radit
+@login_required
 def create_event(request):
-    form = EventForm(request.POST or None)
-
-    if form.is_valid() and request.method == "POST":
-        form.save()
-        return redirect('main:show_main')
-
-    context = {'form': form}
+    if request.method == "POST":
+        form = EventForm(request.POST)
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.user = request.user
+            event.save()
+            return redirect('main:event_page')
+    else:
+        form = EventForm()
+    context = {'form': form, 'active_page': 'events'}
     return render(request, "create_event.html", context)
 
 def show_event(request, id):
-    # Get the event or return 404 if not found
     event = get_object_or_404(Events, pk=id)
-
-    # Calculate average rating for this event
     avg_rating = Rating.objects.filter(
-        content_type=ContentType.objects.get_for_model(Events),
-        object_id=event.id
+        content_type=ContentType.objects.get_for_model(Events), object_id=event.id
     ).aggregate(avg=Avg('score'))['avg'] or 0
-
-    context = {
-        'event': event,
-        'avg_rating': round(avg_rating, 1),
-    }
-
+    context = {'event': event, 'avg_rating': round(avg_rating, 1), 'active_page': 'events'}
     return render(request, "event_detail.html", context)
-
 
 def ajax_event_form(request):
     if request.method == 'POST':
         form = EventForm(request.POST)
         if form.is_valid():
             event = form.save(commit=False)
-            event.user = request.user
+            if request.user.is_authenticated:
+                event.user = request.user
             event.save()
-<<<<<<< HEAD
             return JsonResponse({'success': True})
-        return JsonResponse({'success': False, 'errors': form.errors.as_json()})
+        return JsonResponse({'success': False, 'errors': form.errors.as_json()}, status=400)
     else:
         form = EventForm()
-        html = render_to_string('partials/event_form.html', {'form': form}, request=request)
-        return JsonResponse({'html': html})
-=======
-            return JsonResponse({'success': True})  # ✅ Correct placement
-        return JsonResponse({'success': False, 'errors': form.errors.as_text()})
-    else:
-        form = EventForm()
-        html = render_to_string('partials/event_form.html', {'form': form}, request=request)
-        return HttpResponse(html)
->>>>>>> tkpbp/radit
-
-
-def ajax_venue_form(request):
-    if request.method == 'POST':
-        form = VenueForm(request.POST)
-        if form.is_valid():
-            venue = form.save(commit=False)
-            venue.user = request.user
-            venue.save()
-            return JsonResponse({'success': True})  # ✅ Correct placement
-        return JsonResponse({'success': False, 'errors': form.errors.as_text()})
-    else:
-        form = VenueForm()
-        html = render_to_string('partials/venue_form.html', {'form': form}, request=request)
-        return HttpResponse(html)
-
-<<<<<<< HEAD
-def ajax_event_detail(request, id):
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         try:
-            event = get_object_or_404(Events, id=id) 
-            html = render_to_string(
-                'partials/event_detail_snippet.html',
-                {'event': event, 'user': request.user} # Tambahkan 'user'
-            )
+            html = render_to_string('partials/event_form.html', {'form': form}, request=request)
             return JsonResponse({'html': html})
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
-    return JsonResponse({'error': 'Invalid request'}, status=400)
+            print(f"Error rendering event form: {e}")
+            return JsonResponse({'error': 'Could not load form template.'}, status=500)
 
-=======
->>>>>>> tkpbp/radit
+def ajax_event_detail(request, id):
+    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+    if not is_ajax:
+        return JsonResponse({'error': 'Invalid request type'}, status=400)
+
+    try:
+        event = get_object_or_404(Events, id=id)
+        html = render_to_string(
+            'partials/event_detail_snippet.html',
+            {'event': event, 'user': request.user}
+        )
+        return JsonResponse({'html': html})
+    except Http404:
+         return JsonResponse({'error': 'Event not found'}, status=404)
+    except Exception as e:
+        print(f"Error in ajax_event_detail: {e}")
+        return JsonResponse({'error': 'Failed to load details'}, status=500)
+
 @csrf_exempt
 def register_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         email = request.POST.get('email')
         password = request.POST.get('password')
-        if not username or not email or not password:
-            return JsonResponse({'success': False, 'errors': 'All fields required.'})
+        if not all([username, email, password]):
+            return JsonResponse({'success': False, 'errors': 'All fields required.'}, status=400)
         if User.objects.filter(username=username).exists():
-            return JsonResponse({'success': False, 'errors': 'Username already exists.'})
-        user = User.objects.create_user(username=username, email=email, password=password)
-        login(request, user)
-        return JsonResponse({'success': True})
+            return JsonResponse({'success': False, 'errors': 'Username already exists.'}, status=400)
+        try:
+            user = User.objects.create_user(username=username, email=email, password=password)
+            login(request, user)
+            return JsonResponse({'success': True})
+        except Exception as e:
+            print(f"Error during registration: {e}")
+            return JsonResponse({'success': False, 'errors': 'Could not create user.'}, status=500)
     return render(request, 'register.html')
 
 @csrf_exempt
@@ -396,174 +341,123 @@ def login_view(request):
             login(request, user)
             return JsonResponse({'success': True})
         else:
-            return JsonResponse({'success': False, 'errors': 'Invalid credentials.'})
+            return JsonResponse({'success': False, 'errors': 'Invalid credentials.'}, status=400)
     return render(request, 'login.html')
 
-@csrf_exempt
 def logout_view(request):
     logout(request)
     return redirect('main:show_main')
 
-
-@csrf_exempt
+@login_required
+@require_POST
 def ajax_delete(request, type, id):
-    if not request.user.is_authenticated:
-        return JsonResponse({'success': False, 'errors': 'Authentication required.'})
     model_map = {'article': Article, 'venue': Venue, 'event': Events}
     model = model_map.get(type)
-    if not model:
-        return JsonResponse({'success': False, 'errors': 'Invalid type.'})
+    if not model: return JsonResponse({'success': False, 'errors': 'Invalid type.'}, status=400)
+
     obj = get_object_or_404(model, pk=id)
     if hasattr(obj, 'user') and obj.user != request.user:
-        return JsonResponse({'success': False, 'errors': 'Permission denied.'})
-    obj.delete()
-    return JsonResponse({'success': True})
+        return JsonResponse({'success': False, 'errors': 'Permission denied.'}, status=403)
 
-@csrf_exempt
+    try:
+        obj.delete()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        print(f"Error deleting {type} {id}: {e}")
+        return JsonResponse({'success': False, 'errors': 'Could not delete item.'}, status=500)
+
+@login_required
 def ajax_edit(request, type, id):
-    if not request.user.is_authenticated:
-        return JsonResponse({'success': False, 'errors': 'Authentication required.'})
     model_map = {'article': Article, 'venue': Venue, 'event': Events}
     form_map = {'article': ArticleForm, 'venue': VenueForm, 'event': EventForm}
     model = model_map.get(type)
     form_class = form_map.get(type)
-    if not model or not form_class:
-        return JsonResponse({'success': False, 'errors': 'Invalid type.'})
+    if not model or not form_class: return JsonResponse({'success': False, 'errors': 'Invalid type.'}, status=400)
+
     obj = get_object_or_404(model, pk=id)
     if hasattr(obj, 'user') and obj.user != request.user:
-        return JsonResponse({'success': False, 'errors': 'Permission denied.'})
+        return JsonResponse({'success': False, 'errors': 'Permission denied.'}, status=403)
+
     if request.method == 'POST':
         form = form_class(request.POST, instance=obj)
         if form.is_valid():
             form.save()
             return JsonResponse({'success': True})
-        return JsonResponse({'success': False, 'errors': form.errors.as_text()})
+        return JsonResponse({'success': False, 'errors': form.errors.as_json()}, status=400)
     else:
-<<<<<<< HEAD
         context = {
             'form': form_class(instance=obj),
             'form_action_url': f"/ajax_edit/{type}/{id}/"
         }
-        html = render_to_string(f'partials/{type}_form.html', context, request=request)
-=======
-        html = render_to_string(f'partials/{type}_form.html', {'form': form_class(instance=obj)}, request=request)
->>>>>>> tkpbp/radit
-        return JsonResponse({'html': html})
+        partial_template_name = f'partials/{type}_form.html'
+        try:
+            html = render_to_string(partial_template_name, context, request=request)
+            return JsonResponse({'html': html})
+        except Exception as e:
+            print(f"Error rendering edit form ({partial_template_name}): {e}")
+            return JsonResponse({'error': f'Could not load edit form template ({partial_template_name}).'}, status=500)
 
-@csrf_exempt
 def ajax_cards(request):
     type_filter = request.GET.get('type', 'all')
-
-    # Fetch all data
-    venues = Venue.objects.all()
-    articles = Article.objects.all()
-    events = Events.objects.all()
-
     items = []
-
-    # Articles
-    if type_filter in ('all', 'article'):
-        for a in articles:
-            items.append({
-                'id': a.id,
-                'type': 'article',
-                'title': a.title,
-                'content': a.content,
-                'category': a.category,
-                'created_at': a.published_date,
-                'thumbnail': getattr(a, 'thumbnail', None) or getattr(a, 'image_url', None),
-                'user': a.user,  # ✅ actual user object
-                'detail_url': f"/article/{a.id}/",
-            })
-
-    # Venues
-    if type_filter in ('all', 'venue'):
-        for v in venues:
-            items.append({
-                'id': v.id,
-                'type': 'venue',
-                'name': v.name,
-                'city': v.city,
-                'address': v.address,
-                'contact': v.contact,
-                'website': v.website,
-                'thumbnail': getattr(v, 'thumbnail', None) or getattr(v, 'image_url', None),
-                'user': v.user,  # ✅ actual user object
-                'detail_url': f"/venue/{v.id}/",
-            })
-
-    # Events
-    if type_filter in ('all', 'event'):
-        for e in events:
-            items.append({
-                'id': e.id,
-                'type': 'event',
-                'name': e.name,
-                'description': e.description,
-                'date': e.date,
-                'venue': e.venue,
-                'thumbnail': getattr(e, 'thumbnail', None) or getattr(e, 'image_url', None),
-                'user': e.user,  # ✅ actual user object
-                'detail_url': f"/event/{e.id}/",
-            })
-
-    # Sort newest first
     items.sort(key=lambda x: x.get('created_at', x.get('date', timezone.now())), reverse=True)
-
-    # Render each card template
-    html = "".join([
-        render_to_string('card.html', {'item': item, 'user': request.user}, request=request)
-        for item in items
-    ])
-    return HttpResponse(html)
+    try:
+        html = "".join([ render_to_string('card.html', {'item': item, 'user': request.user}, request=request) for item in items ])
+        return HttpResponse(html)
+    except Exception as e:
+         print(f"Error rendering ajax_cards: {e}")
+         return HttpResponse("Error loading cards.", status=500)
 
 
 def about_view(request):
-    return render(request, "about.html")
+    context = {'active_page': 'about'}
+    return render(request, "about.html", context)
 
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-from django.contrib.contenttypes.models import ContentType
-from .models import Rating
-
-@require_POST
-@login_required
 def rate_item(request):
-    item_type = request.POST.get('type')  # 'event', 'venue', 'article'
-    item_id = request.POST.get('id')
-    score = int(request.POST.get('score'))
+    if request.user.is_authenticated:
+        return JsonResponse({'error': 'Logged-in users cannot submit reviews.'}, status=403)
+        
+    if request.method == 'POST':
+        item_type = request.POST.get('type')
+        item_id = request.POST.get('id')
+        score_str = request.POST.get('score')
+        comment_text = request.POST.get('comment', '')
+        anonymous_name = request.POST.get('name', '')
 
-    # Determine which model to rate
-    model_map = {
-        'event': Events,
-        'venue': Venue,
-        'article': Article
-    }
+        if not score_str: return JsonResponse({'error': 'Score is required.'}, status=400)
+        if not anonymous_name: return JsonResponse({'error': 'Your name is required.'}, status=400)
 
-    if item_type not in model_map:
-        return JsonResponse({'error': 'Invalid type'}, status=400)
+        try:
+            score = int(score_str)
+            if not (1 <= score <= 5): raise ValueError("Score out of range")
+        except ValueError:
+            return JsonResponse({'error': 'Invalid score value.'}, status=400)
 
-    model = model_map[item_type]
-    content_type = ContentType.objects.get_for_model(model)
+        model_map = {'event': Events, 'venue': Venue, 'article': Article}
+        if item_type not in model_map: return JsonResponse({'error': 'Invalid type'}, status=400)
+        model = model_map[item_type]
+        content_type = ContentType.objects.get_for_model(model)
 
-    # Create or update the rating
-    rating, created = Rating.objects.update_or_create(
-        user=request.user,
-        content_type=content_type,
-        object_id=item_id,
-        defaults={'score': score},
-    )
+        if not model.objects.filter(pk=item_id).exists():
+            return JsonResponse({'error': 'Item not found.'}, status=404)
 
-    # Recalculate average
-    avg = Rating.objects.filter(
-        content_type=content_type,
-        object_id=item_id
-    ).aggregate(Avg('score'))['score__avg'] or 0
-
-
-    return JsonResponse({
-        'message': 'Rating saved!',
-        'average': round(avg, 1),
-        'your_rating': score,
-    })
+        try:
+            Rating.objects.create(
+                user=None,
+                anonymous_name=anonymous_name,
+                content_type=content_type, 
+                object_id=item_id,
+                score=score,
+                comment=comment_text
+            )
+            
+            avg = Rating.objects.filter(
+                content_type=content_type, object_id=item_id
+            ).aggregate(avg=Avg('score'))['avg'] or 0
+            return JsonResponse({'message': 'Rating saved!', 'average': round(avg, 1)})
+        
+        except Exception as e:
+            print(f"Error saving rating: {e}")
+            return JsonResponse({'error': 'Could not save rating.'}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method.'}, status=405)

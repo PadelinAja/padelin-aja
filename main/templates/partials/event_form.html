@@ -1,9 +1,27 @@
-<<<<<<< HEAD
 <style>
   .form-group { margin-bottom: 15px; }
   .form-group label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 5px; color: #333; }
-  .form-group input, .form-group select, .form-group textarea {
-      width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; 
+  /* Target inputs, selects, textareas inside .form-group for consistent styling */
+  .form-group input, 
+  .form-group select, 
+  .form-group textarea {
+      width: 100%; 
+      padding: 10px 12px; 
+      border: 1px solid #ccc; 
+      border-radius: 6px; 
+      box-sizing: border-box; 
+      font-family: inherit; /* Ensure form elements use the page font */
+      font-size: 1rem;
+  }
+  /* Style specifically for select dropdowns if needed */
+  .form-group select {
+      appearance: none; 
+      background-color: white;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1em;
+      padding-right: 2.5rem;
   }
   .form-error { color: #b00; font-size: 0.85rem; margin-top: 4px; }
 </style>
@@ -15,21 +33,10 @@
     <div class="form-group">
         {{ field.label_tag }}
         {{ field }}
-        {% if field.errors %}
-            {% endif %}
     </div>
   {% endfor %}
 
-  <button type="submit" class="btn-submit-form">
+  <button type="submit">
     {% if form_action_url %}Update Event{% else %}Submit Event{% endif %}
   </button>
 </form>
-=======
-<form method="post" action="{% url 'main:ajax_event_form' %}" id="eventForm">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <label for="id_image_url">Image URL (optional):</label>
-  <input type="url" name="image_url" id="id_image_url" placeholder="https://example.com/image.jpg" value="{{ form.image_url.value|default_if_none:'' }}" style="width:100%;margin-bottom:12px;" />
-  <button type="submit">Publish Event</button>
-</form>
->>>>>>> tkpbp/radit

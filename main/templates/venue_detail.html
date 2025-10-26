@@ -1,101 +1,11 @@
-<<<<<<< HEAD
-<!DOCTYPE html>
-<html lang="en">
-{% load static %}
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ venue.name }} - Padel In Aja</title>
-
-    <style>
-        body {
-            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #f7f7f9;
-            color: #333;
-            line-height: 1.6;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            margin-top: 40px;
-            margin-bottom: 40px;
-        }
-        .venue-header { border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 20px; }
-        .venue-title { font-size: 2.3em; margin: 0 0 10px 0; color: #2c3e50; }
-        .venue-meta { color: #666; font-size: 0.9em; margin-bottom: 10px; }
-        .venue-location { display: inline-block; background: #0b6; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.8em; margin-right: 10px; }
-        .venue-description { font-size: 1.1em; line-height: 1.8; }
-        .back-link { display: inline-block; margin-bottom: 20px; color: #0b6; text-decoration: none; font-weight: 500; }
-        .back-link:hover { text-decoration: underline; }
-        .star { cursor:pointer; font-size:1.5em; color:#ccc; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <a href="{% url 'main:show_main' %}" class="back-link">← Back to Venues</a>
-
-        <!-- ⭐ Average rating display -->
-        {% if avg_rating %}
-        <div style="font-size: 1.2em; color: #f5c518; margin-bottom: 4px;">
-            {% for i in "12345"|slice:":5" %}
-                {% if forloop.counter <= avg_rating|floatformat:0 %}
-                    ★
-                {% else %}
-                    ☆
-                {% endif %}
-            {% endfor %}
-            <span style="color: #666; font-size: 0.9em;">{{ avg_rating|floatformat:1 }}/5</span>
-        </div>
-        {% endif %}
-
-        <!-- ⭐ User interactive rating -->
-        <div 
-            id="user-rating"
-            data-type="venue"
-            data-id="{{ venue.id }}"
-            data-rate-url="{% url 'main:rate_item' %}"
-            data-csrf="{{ csrf_token }}"
-            style="margin-top: 5px;"
-        >
-            {% for i in "12345" %}
-                <span class="star" data-score="{{ forloop.counter }}">★</span>
-            {% endfor %}
-        </div>
-        <p style="color:#666; font-size:0.9em; margin-top:5px;">rate this venue ⭐</p>
-
-        <section>
-            <header class="venue-header">
-                <h1 class="venue-title">{{ venue.name }}</h1>
-                <div class="venue-meta">
-                    {% if venue.location %}
-                        <span class="venue-location">{{ venue.location }}</span>
-                    {% endif %}
-                    {% if venue.capacity %}
-                        <span>Capacity: {{ venue.capacity }}</span>
-                    {% endif %}
-                </div>
-            </header>
-            <div class="venue-description">
-                {{ venue.description|linebreaks }}
-            </div>
-        </section>
-    </div>
-
-    <!-- ✅ load JS at the end for better performance -->
-    <script src="{% static 'js/rating.js' %}"></script>
-</body>
-</html>
-=======
 {% extends 'base.html' %}
 {% load static %}
-{% load custom_filters %} {% block content %}
+{% load humanize %}
+{% load custom_filters %}
+
+{% block content %}
 <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background: #f7f7f9; color: #333; line-height: 1.6; }
     .detail-container {
         max-width: 1200px;
         margin: 40px auto;
@@ -106,21 +16,22 @@
         grid-template-columns: 2fr 1fr;
         gap: 40px;
     }
-
-    /* --- Image Gallery --- */
     .image-gallery {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto;
+        grid-template-columns: 1fr; 
         gap: 16px;
     }
+    .image-gallery.has-thumbnails {
+         grid-template-columns: 1fr 1fr;
+    }
     .gallery-main-image {
-        grid-column: 1 / -1; /* Span both columns */
+        grid-column: 1 / -1;
         width: 100%;
         height: 450px;
         object-fit: cover;
         border-radius: 12px;
         background-color: #eee;
+        margin-bottom: 8px;
     }
     .gallery-thumb {
         width: 100%;
@@ -128,14 +39,18 @@
         object-fit: cover;
         border-radius: 8px;
         background-color: #eee;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
     }
-
-    /* --- Main Content --- */
+    .gallery-thumb:hover {
+        opacity: 0.8;
+    }
     .venue-info h1 {
         font-size: 2.2rem;
         font-weight: 900;
         margin-top: 24px;
         margin-bottom: 8px;
+        color: #2c3e50;
     }
     .venue-meta {
         display: flex;
@@ -144,6 +59,7 @@
         font-size: 1rem;
         color: #555;
         margin-bottom: 24px;
+        flex-wrap: wrap;
     }
     .venue-rating {
         display: flex;
@@ -158,7 +74,6 @@
     .venue-location {
         font-weight: 600;
     }
-
     .venue-section {
         margin-top: 32px;
     }
@@ -168,18 +83,26 @@
         margin-bottom: 16px;
         border-bottom: 2px solid #f0f0f0;
         padding-bottom: 8px;
-    }
-    .facility-list {
-        list-style: none;
-        padding: 0;
-        font-size: 1.1rem;
         color: #333;
     }
-    .facility-list li {
-        padding: 8px 0;
+    .facility-list, .contact-info {
+        list-style: none;
+        padding: 0;
+        font-size: 1rem;
+        color: #333;
     }
-
-    /* --- Sidebar --- */
+    .facility-list li, .contact-info li {
+        padding: 6px 0;
+        margin-bottom: 8px;
+    }
+    .contact-info li a {
+        color: #6A1B9A;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    .contact-info li a:hover {
+        text-decoration: underline;
+    }
     .sidebar-card {
         background: #fff;
         border: 1px solid #eee;
@@ -187,11 +110,12 @@
         padding: 24px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         position: sticky;
-        top: 20px; /* Sticks to the top */
+        top: 20px;
     }
     .sidebar-card .price {
         font-size: 0.9rem;
         color: #777;
+        margin-bottom: 4px;
     }
     .sidebar-card .price-value {
         font-size: 1.5rem;
@@ -203,7 +127,7 @@
         display: block;
         width: 100%;
         padding: 14px;
-        background: #6A1B9A; /* Purple */
+        background: #6A1B9A;
         color: white;
         text-align: center;
         text-decoration: none;
@@ -212,44 +136,109 @@
         border: none;
         border-radius: 8px;
         cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.1s ease;
     }
-
-    /* --- Contact Info Section (As requested) --- */
-    .contact-info {
-        list-style: none;
-        padding: 0;
+    .book-now-btn:hover {
+        background-color: #5a1683;
+        transform: translateY(-2px);
     }
-    .contact-info li {
+    .rating-input .star {
+        font-size: 2.5rem;
+        color: #ccc;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .rating-input:hover .star { color: #FFC107; }
+    .rating-input .star:hover ~ .star { color: #ccc; }
+    .rating-input .star.selected,
+    .rating-input .star.hovered { color: #FFC107; }
+    .review-card {
+        border: 1px solid #eee; 
+        border-radius: 8px; 
+        padding: 24px; 
+        margin-bottom: 16px;
+        background: #fff;
+    }
+    .review-list {
+        margin-top: 32px;
+    }
+    .review-header {
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        margin-bottom: 8px;
+    }
+    .review-username {
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+    .review-rating-badge {
+        background: #6A1B9A; 
+        color: white; 
+        padding: 4px 8px; 
+        border-radius: 99px; 
+        font-size: 0.9rem; 
+        font-weight: 700;
+    }
+    .review-comment {
+        color: #333; 
+        line-height: 1.6;
         margin-bottom: 12px;
+    }
+    .review-date {
+        color: #888;
+        font-size: 0.9rem;
+    }
+    .review-form-textarea {
+        width: 100%; 
+        padding: 10px; 
+        border-radius: 4px; 
+        border: 1px solid #ccc; 
+        margin-top: 10px;
+        font-family: inherit;
         font-size: 1rem;
-        color: #333;
+        box-sizing: border-box;
     }
-    .contact-info li a {
-        color: #6A1B9A;
-        font-weight: 600;
+    .review-form-btn {
+        margin-top: 16px; 
+        width: auto; 
+        padding: 10px 24px;
+        font-size: 1rem;
     }
-
+    .form-group-label {
+        display:block; 
+        font-weight: 700; 
+        margin-bottom: 6px;
+    }
     @media (max-width: 900px) {
         .detail-grid {
             grid-template-columns: 1fr;
         }
         .sidebar-card {
-            grid-row: 1; /* Move sidebar to top on mobile */
+            grid-row: 1;
             margin-bottom: 32px;
+            position: static;
         }
+        .gallery-main-image { height: 350px; }
+        .gallery-thumb { height: 120px; }
+    }
+    @media (max-width: 600px) {
+        .venue-info h1 { font-size: 1.8rem; }
+        .gallery-main-image { height: 250px; }
     }
 </style>
 
 <div class="detail-container">
     <div class="detail-grid">
-        
+
         <main class="venue-content">
-            <div class="image-gallery">
-                <img src="{{ venue.image_url|default_if_none:'https://via.placeholder.com/800x450' }}" alt="{{ venue.name }}" class="gallery-main-image">
-                {% if venue.image_url_2 %}<img src="{{ venue.image_url_2 }}" alt="{{ venue.name }} 2" class="gallery-thumb">{% endif %}
-                {% if venue.image_url_3 %}<img src="{{ venue.image_url_3 }}" alt="{{ venue.name }} 3" class="gallery-thumb">{% endif %}
-                {% if venue.image_url_4 %}<img src="{{ venue.image_url_4 }}" alt="{{ venue.name }} 4" class="gallery-thumb">{% endif %}
-                {% if venue.image_url_5 %}<img src="{{ venue.image_url_5 }}" alt="{{ venue.name }} 5" class="gallery-thumb">{% endif %}
+            <div class="image-gallery {% if venue.image_url_2 or venue.image_url_3 or venue.image_url_4 or venue.image_url_5 %}has-thumbnails{% endif %}">
+                <img src="{{ venue.image_url|default_if_none:'https://via.placeholder.com/800x450?text=Venue+Image' }}" alt="{{ venue.name }} - Main Image" class="gallery-main-image" id="mainGalleryImage">
+                
+                {% if venue.image_url_2 %}<img src="{{ venue.image_url_2 }}" alt="{{ venue.name }} thumbnail 2" class="gallery-thumb">{% endif %}
+                {% if venue.image_url_3 %}<img src="{{ venue.image_url_3 }}" alt="{{ venue.name }} thumbnail 3" class="gallery-thumb">{% endif %}
+                {% if venue.image_url_4 %}<img src="{{ venue.image_url_4 }}" alt="{{ venue.name }} thumbnail 4" class="gallery-thumb">{% endif %}
+                {% if venue.image_url_5 %}<img src="{{ venue.image_url_5 }}" alt="{{ venue.name }} thumbnail 5" class="gallery-thumb">{% endif %}
             </div>
 
             <div class="venue-info">
@@ -258,43 +247,121 @@
                     {% if avg_rating > 0 %}
                     <span class="venue-rating"><span class="star">★</span> {{ avg_rating|floatformat:1 }}/5</span>
                     {% endif %}
-                    <span class="venue-location">📍 {{ venue.city }}</span>
+                    <span class="venue-location">📍 {{ venue.city }}</span> 
                 </div>
-                
+
+                {% if venue.facilities %}
                 <div class="venue-section">
-                    <h2>Facility</h2>
+                    <h2>Facilities</h2>
                     <ul class="facility-list">
-                        {% if venue.facilities %}
-                            {% for facility in venue.facilities|split_by_comma %}
-                                <li>{{ facility|striptags }}</li>
-                            {% endfor %}
-                        {% else %}
-                            <li>No facility information provided.</li>
-                        {% endif %}
+                        {% for facility in venue.facilities|split_by_comma %}
+                            <li>- {{ facility|striptags|safe }}</li> 
+                        {% endfor %}
                     </ul>
                 </div>
+                {% endif %}
 
                 <div class="venue-section">
                     <h2>Contact & Details</h2>
                     <ul class="contact-info">
-                        <li><strong>Address:</strong> {{ venue.address }}</li>
+                        <li><strong>Address:</strong> {{ venue.address|default:'Not specified' }}</li>
                         <li><strong>Contact:</strong> {{ venue.contact|default:'N/A' }}</li>
-                        <li><strong>Website:</strong> <a href="{{ venue.website|default:'#' }}" target="_blank">{{ venue.website|default:'N/A' }}</a></li>
+                        {% if venue.website %}
+                        <li><strong>Website:</strong> <a href="{{ venue.website }}" target="_blank" rel="noopener noreferrer">{{ venue.website }}</a></li>
+                        {% else %}
+                        <li><strong>Website:</strong> N/A</li>
+                        {% endif %}
                     </ul>
                 </div>
-                
+
+            </div>
+
+            <div class="venue-section" id="reviews-section">
+                <h2>Reviews</h2>
+
+                {% if not user.is_authenticated %} <form id="rating-form" class="review-card">
+                        {% csrf_token %}
+                        <h3 style="margin-top:0;">Leave a Review</h3>
+                        <p>Share your experience at this venue.</p>
+                        
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label for="comment-name" class="form-group-label">Your Name:</label>
+                            <input type="text" id="comment-name" name="name" class="review-form-textarea" placeholder="Enter your name" required>
+                        </div>
+
+                        <div id="user-rating" class="rating-input" 
+                             data-type="venue" 
+                             data-id="{{ venue.id }}"
+                             data-rate-url="{% url 'main:rate_item' %}">
+                            <span class="star" data-score="1">☆</span>
+                            <span class="star" data-score="2">☆</span>
+                            <span class="star" data-score="3">☆</span>
+                            <span class="star" data-score="4">☆</span>
+                            <span class="star" data-score="5">☆</span>
+                        </div>
+                        
+                        <textarea id="comment-text" name="comment" rows="4" placeholder="Write your comment..." class="review-form-textarea"></textarea>
+                        
+                        <button type="submit" class="book-now-btn review-form-btn">Submit Review</button>
+                    </form>
+                {% else %}
+                    <div class="review-card">
+                        <p>Logged-in publishers cannot leave reviews.</p>
+                    </div>
+                {% endif %}
+
+                <div class="review-list">
+                    {% for review in reviews %}
+                        <div class="review-card">
+                            <div class="review-header">
+                                <strong class="review-username">
+                                    {% if review.user %}
+                                        {{ review.user.username }}
+                                    {% else %}
+                                        {{ review.anonymous_name|default:'Anonymous' }}
+                                    {% endif %}
+                                </strong>
+                                <span class="review-rating-badge">
+                                    ★ {{ review.score }}/5
+                                </span>
+                            </div>
+                            {% if review.comment %}
+                                <p class="review-comment">{{ review.comment }}</p>
+                            {% endif %}
+                            <small class="review-date">{{ review.created_at|date:"M j, Y" }}</small>
+                        </div>
+                    {% empty %}
+                        <p>No reviews yet. Be the first!</p>
+                    {% endfor %}
                 </div>
-        </main>
+            </div>
+
+        </main> 
         
         <aside class="sidebar">
             <div class="sidebar-card">
                 <div class="price">Start From</div>
-                <div class="price-value">{{ venue.price_range|default:'N/A' }}</div>
-                <button class="book-now-btn">Book Now</button>
+                <div class="price-value">{{ venue.price_range|default:'Price N/A' }}</div>
+                <button class="book-now-btn">Book Now</button> 
             </div>
         </aside>
 
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mainImage = document.getElementById('mainGalleryImage');
+        const thumbnails = document.querySelectorAll('.gallery-thumb');
+
+        thumbnails.forEach(thumb => {
+            thumb.addEventListener('click', function() {
+                mainImage.src = this.src;
+            });
+        });
+    });
+</script>
+
+<script src="{% static 'js/rating.js' %}"></script>
+
 {% endblock content %}
->>>>>>> tkpbp/radit

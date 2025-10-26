@@ -1,277 +1,18 @@
-<<<<<<< HEAD
-<!DOCTYPE html
-{% extends 'base.html' %}
-{% block content %}
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Padel In Aja — Main</title>
-  <style>
-    /* Reset & Basic Styles */
-    body { 
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; 
-      margin: 0; 
-      padding: 0; 
-      background: #FEF9F9; /* Warna latar belakang utama */
-      color: #333; 
-    }
-    .container { 
-      max-width: 1100px; 
-      margin: 24px auto; 
-      padding: 16px; 
-    }
-    
-    /* Hero Section - DIUBAH SESUAI PERMINTAAN TEKS */
-    .hero {
-      display: flex;
-      align-items: center;
-      padding: 60px 40px;
-      background: #FFFFFF; /* 3. Warna belakang Join Community harusnya putih */
-      position: relative;
-      min-height: auto; /* Dihapus min-height 400px */
-    }
-    /* Dihapus: hero::before (gradien) */
-    /* Dihapus: background-image */
-
-    .hero-content {
-      position: relative;
-      z-index: 2;
-      max-width: 500px;
-    }
-    .hero-content h1 {
-      font-size: 3.5rem; 
-      font-weight: 700;
-      margin: 0;
-      line-height: 1.1;
-      color: #000000; /* 1. warna Join Communitynya harusnya item */
-    }
-    .hero-content h1 .highlight {
-      color: #6A1B9A; /* 2. warna P| harusnya ungu */
-    }
-    .hero-content p {
-      font-size: 1.1rem;
-      margin: 16px 0 24px 0;
-      color: #000000; /* Teks harus hitam agar terbaca di bg putih */
-    }
-    .hero-buttons a {
-      text-decoration: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-weight: 600;
-      margin-right: 12px;
-      display: inline-block;
-    }
-    .hero-buttons .btn-primary {
-      background-color: #6A1B9A; 
-      color: #fff;
-    }
-    .hero-buttons .btn-secondary {
-      background-color: #FFED2C; 
-      color: #000000; 
-    }
-    
-    /* Section Headings */
-    h2.section-title {
-      font-size: 2rem;
-      font-weight: 600;
-      margin: 40px 0 24px 0;
-      color: #6A1B9A; /* 4 & 5. Top Venues & Upcoming ungu */
-    }
-    
-    /* Venues Layout */
-    .venues-layout {
-      display: grid;
-      grid-template-columns: 2fr 1fr; 
-      gap: 32px;
-    }
-
-    /* Card Grid (Left Column) */
-    .card-grid { 
-      display: grid; 
-      grid-template-columns: repeat(2, 1fr); 
-      gap: 24px; 
-    }
-    
-    /* Venue Card Styles */
-    .venue-card {
-      background: #fff; 
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid #eee;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-      transition: box-shadow 0.2s;
-    }
-    .venue-card:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.07);
-    }
-    .venue-card .card-image img {
-      width: 100%;
-      height: 200px; 
-      object-fit: cover;
-      display: block;
-    }
-    .venue-card .card-content { 
-      padding: 16px; 
-    }
-    .venue-card .card-meta { 
-      font-size: 0.85rem; 
-      color: #666; 
-      margin-bottom: 8px; 
-    }
-    .venue-card .card-title { 
-      font-size: 1.15rem; 
-      font-weight: 600; 
-      color: #000000; 
-      margin: 0 0 8px 0; 
-      line-height: 1.3;
-    }
-    .venue-card .card-description { 
-      font-size: 0.9rem; 
-      color: #555; 
-      line-height: 1.5; 
-    }
-
-    /* Venues Sidebar (Right Column) */
-    .venues-sidebar .sidebar-item {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    .venues-sidebar .sidebar-item img {
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 6px;
-    }
-    .venues-sidebar .sidebar-item-content {
-      flex: 1;
-    }
-    .venues-sidebar .sidebar-item-meta {
-      font-size: 0.8rem;
-      color: #666; 
-      margin-bottom: 4px;
-    }
-    .venues-sidebar .sidebar-item-title {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: #000000; 
-      line-height: 1.3;
-    }
-    
-    /* Upcoming Match Section */
-    .upcoming-match h2 span {
-      color: #FFED2C; /* Teks "Match" tetap kuning */
-    }
-    .upcoming-match-box {
-      border: 1px solid #e0e0e0;
-      background: #fff; 
-      border-radius: 8px;
-      min-height: 300px;
-      margin-bottom: 32px;
-    }
-    
-    /* Footer */
-    footer { 
-      text-align: center; 
-      color: #666; 
-      padding: 24px 0; 
-      font-size: 0.9rem; 
-      border-top: 1px solid #eee;
-      margin-top: 40px;
-    }
-  </style>
-</head>
-<body>
-  {% include 'navbar.html' %}
-
-  <section class="hero">
-    <div class="hero-content">
-      <h1>Join the Community. <span class="highlight">P|</span></h1>
-      <p>Discover top padel venues near you, book matches in seconds, and connect with passionate players across Java.</p>
-      <div class="hero-buttons">
-        <a href="#" class="btn-primary">Explore Courts</a>
-        <a href="#" class="btn-secondary">Padel Updates!</a>
-      </div>
-    </div>
-  </section>
-
-  <main class="container" role="main">
-
-    <section class="top-venues">
-      <h2 class="section-title">Top Venues</h2>
-      
-      <div class="venues-layout">
-        <div id="cardGrid" class="card-grid">
-          {% for item in items %}
-            {% include 'card.html' with item=item %}
-          {% endfor %}
-          {% if not items %}
-            {% include 'card.html' with item=None %}
-            {% include 'card.html' with item=None %}
-          {% endif %}
-        </div>
-        
-        <aside class="venues-sidebar">
-          <div class="sidebar-item">
-            <img src="https://i.imgur.com/E9qA21D.jpeg" alt="Ski Image 3">
-            <div class="sidebar-item-content">
-              <div class="sidebar-item-meta">08-11-2021 | Category</div>
-              <div class="sidebar-item-title">Partiality on or continuing in particular principles.</div>
-            </div>
-          </div>
-          <div class="sidebar-item">
-            <img src="https://i.imgur.com/E9qA21D.jpeg" alt="Ski Image 4">
-            <div class="sidebar-item-content">
-              <div class="sidebar-item-meta">08-11-2021 | Category</div>
-              <div class="sidebar-item-title">Do believing oh disposing to supported allowance wa.</div>
-            </div>
-          </div>
-          <div class="sidebar-item">
-            <img src="https://i.imgur.com/E9qA21D.jpeg" alt="Ski Image 5">
-            <div class="sidebar-item-content">
-              <div class="sidebar-item-meta">08-11-2021 | Category</div>
-              <div class="sidebar-item-title">Village did removed enjoyed explain nor ham law.</div>
-            </div>
-          </div>
-          <div class="sidebar-item">
-            <img src="https://i.imgur.com/E9qA21D.jpeg" alt="Ski Image 6">
-            <div class="sidebar-item-content">
-              <div class="sidebar-item-meta">08-11-2021 | Category</div>
-              <div class="sidebar-item-title">Securing as informed declared or margaret.</div>
-            </div>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <section class="upcoming-match">
-      <h2 class="section-title">Upcoming <span>Match</span></h2>
-      <div class="upcoming-match-box">
-        </div>
-    </section>
-
-  </main>
-
-  <footer>
-    <small>Copyright @PadelinAja. All Rights Reserved.</small>
-  </footer>
-
-</body>
-</html>
-=======
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 {% block content %}
+
 <style>
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin: 0; padding: 0; background: #FEF9F9; color: #333; }
+
   .hero {
-    background: 
-      linear-gradient(to bottom, white 10%, transparent 30%), /* Top fade */
-      linear-gradient(to top, white 10%, transparent 30%),   /* Bottom fade */
-      linear-gradient(to right, white 50%, transparent 80%), /* Left fade */
-      linear-gradient(to left, white 10%, transparent 30%),  /* Right fade */
+    background:
+      linear-gradient(to bottom, white 10%, transparent 30%),
+      linear-gradient(to top, white 10%, transparent 30%),
+      linear-gradient(to right, white 50%, transparent 80%),
+      linear-gradient(to left, white 10%, transparent 30%),
       url('{% static "images/Homepage_Image.png" %}') no-repeat center right;
-    
     background-size: cover;
     padding: 60px 20px;
     display: flex;
@@ -280,11 +21,13 @@
     gap: 40px;
     position: relative;
     overflow: hidden;
+    min-height: 400px;
   }
-  
+
   .hero-content {
     max-width: 1200px;
     margin-left: max(20px, calc((100vw - 1200px) / 2 + 20px));
+    z-index: 2;
   }
   .hero h1 {
     font-size: 2.8rem;
@@ -292,63 +35,62 @@
     margin-bottom: 20px;
     font-weight: 900;
     min-height: 120px;
+    line-height: 1.2;
   }
   .hero p {
     font-size: 1.1rem;
     color: #444;
     margin-bottom: 30px;
     max-width: 480px;
+    line-height: 1.6;
   }
-  
-  .btn-purple {
-    background-color: #6A1B9A;
-    color: white; /* White text */
+
+  .btn-purple, .btn-yellow {
     padding: 12px 24px;
     border-radius: 999px;
     font-weight: bold;
-    margin-right: 12px;
     text-decoration: none;
-    transition: background 0.3s ease;
+    transition: bg 0.3s ease, transform 0.1s ease;
+    display: inline-block;
+    margin-right: 12px;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-purple {
+    background-color: #6A1B9A;
+    color: white;
   }
   .btn-purple:hover {
     background-color: #4c126d;
+    transform: translateY(-2px);
     text-decoration: none;
   }
   .btn-yellow {
     background-color: #FFED2C;
-    color: #000; /* Black text */
-    padding: 12px 24px;
-    border-radius: 999px;
-    font-weight: bold;
-    text-decoration: none;
-    transition: background 0.3s ease;
+    color: #000;
   }
   .btn-yellow:hover {
     background-color: #e7db00;
+    transform: translateY(-2px);
     text-decoration: none;
   }
 
-  /* --- CSS FOR TYPING ANIMATION --- */
   #typed-text {
     transition: color 0.3s ease;
   }
-  .typed-purple {
-    color: #6A1B9A; /* Your Purple */
-  }
-  .typed-yellow {
-    color: #FFED2C; /* Your Yellow */
-  }
+  .typed-purple { color: #6A1B9A; }
+  .typed-yellow { color: #FFED2C; }
   #typed-text::after {
     content: '|';
     animation: blink 0.7s infinite;
     font-weight: 100;
     opacity: 1;
+    margin-left: 2px;
   }
   @keyframes blink {
     0%, 100% { opacity: 1; }
     50% { opacity: 0; }
   }
-  /* --- END OF CSS --- */
 
   .section {
     max-width: 1200px;
@@ -357,14 +99,11 @@
   }
   .section h2 {
     font-size: 2rem;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     color: #2c2c2c;
     font-weight: 900;
   }
-
-  .section h2 span {
-    color: #6A1B9A; /* Purple */
-  }
+  .section h2 span { color: #6A1B9A; }
 
   .top-venues {
     display: grid;
@@ -376,30 +115,32 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 24px;
   }
-  
-  /* Styling overrides for cards on homepage */
+
   .venue-cards .card {
     border: none;
     box-shadow: none;
     background: none;
+    padding: 0;
+    border-radius: 6px;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease, background-color 0.2s ease;
   }
   .venue-cards .card:hover {
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     background: #fff;
   }
-  .venue-cards .card-thumbnail {
-    border-radius: 6px;
-    overflow: hidden;
+  .venue-cards .card-thumbnail img {
+     border-radius: 6px 6px 0 0;
+     height: 200px;
+     object-fit: cover;
   }
-  .venue-cards .card-content {
-    padding: 12px 0 0 0;
+   .venue-cards .card-content {
+    padding: 16px;
   }
   .venue-cards .card-badge,
   .venue-cards .card-type-badge,
   .venue-cards .card-rating,
-  .venue-cards .card-footer {
-    display: none;
-  }
+  .venue-cards .card-footer,
   .venue-cards .card-meta-user {
     display: none;
   }
@@ -407,129 +148,143 @@
     font-size: 1.25rem;
     line-height: 1.3;
     margin-bottom: 8px;
+    font-weight: 600;
   }
   .venue-cards .card-description {
     font-size: 1rem;
     line-height: 1.6;
     color: #555;
+    display: -webkit-box;
     -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
-  /* End of card override styles */
 
   .side-venues article {
     display: flex;
     gap: 12px;
     margin-bottom: 20px;
+    align-items: center;
   }
   .side-venues img {
     width: 60px;
     height: 60px;
     object-fit: cover;
-    border-radius: 6px; /* Rounded corners for side images */
+    border-radius: 6px;
+    flex-shrink: 0;
   }
   .side-venues .meta {
     font-size: 0.8rem;
     color: #999;
+    margin-bottom: 4px;
   }
   .side-venues strong {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 700;
+    color: #333;
+    line-height: 1.3;
   }
 
-  .upcoming {
-    margin-top: 60px;
-  }
+  .upcoming { margin-top: 60px; }
   .upcoming h2 {
     font-size: 1.8rem;
     color: #2c2c2c;
     margin-bottom: 20px;
     font-weight: 900;
   }
-  .upcoming h2 span {
-    color: #FFED2C;
-  }
+  .upcoming h2 span { color: #FFED2C; }
   .upcoming-box {
     min-height: 300px;
     border: 2px dashed #ccc;
     border-radius: 12px;
     background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-style: italic;
   }
 
   @media (max-width: 900px) {
-    .top-venues {
-      grid-template-columns: 1fr;
-    }
+    .top-venues { grid-template-columns: 1fr; }
   }
   @media (max-width: 600px) {
     .hero {
-      background: #fff;
-      padding-top: 20px;
+      background-image: none;
+      background-color: #fff;
+      padding: 40px 20px;
+      text-align: center;
+      justify-content: center;
     }
     .hero-content {
-      margin-left: 20px;
+        margin-left: auto;
+        margin-right: auto;
     }
-    .venue-cards {
-      grid-template-columns: 1fr;
-    }
+     .hero h1 { font-size: 2.2rem; min-height: auto; }
+     .hero p { max-width: 100%; }
+    .venue-cards { grid-template-columns: 1fr; }
   }
+  
+  footer { text-align: center; color: #666; padding: 24px 0; font-size: 0.9rem; border-top: 1px solid #eee; margin-top: 60px; }
 </style>
 
 <div class="hero">
   <div class="hero-content">
-    
     <h1>Join the Community.<br><span id="typed-text"></span></h1>
-    
     <p>Discover top padel venues near you, book matches in seconds, and connect with passionate players across Java.</p>
-    
-    
-<a href="#" class="btn-yellow">Explore Courts</a> 
-    <a href="#" class="btn-purple">Padel Updates!</a>
+    <a href="{% url 'main:show_venues' %}" class="btn-yellow">Explore Courts</a>
+    <a href="{% url 'main:article_list' %}" class="btn-purple">Padel Updates!</a>
   </div>
 </div>
-
 <div class="section">
   
   <h2>Top <span>Venues</span></h2>
-  
   <div class="top-venues">
     <div class="venue-cards">
-      {% for item in items|slice:":2" %}
+      {% for item in top_venues|slice:":2" %}
         {% include 'card.html' with item=item user=user %}
       {% endfor %}
+      {% if top_venues|length < 2 %}
+          <div class="card"></div>
+      {% endif %}
+       {% if top_venues|length < 1 %}
+          <div class="card"></div>
+      {% endif %}
     </div>
     <div class="side-venues">
-      {% for item in items|slice:"2:6" %}
+      {% for item in top_venues|slice:"2:6" %}
         <article>
           {% if item.thumbnail %}
-            <img src="{{ item.thumbnail }}" alt="Venue thumbnail">
+            <img src="{{ item.thumbnail }}" alt="{{ item.name }} thumbnail">
           {% else %}
-            <div style="width:60px; height:60px; background:#eee; border-radius:6px;"></div>
+            <div style="width:60px; height:60px; background:#eee; border-radius:6px; flex-shrink: 0;"></div>
           {% endif %}
           <div>
             <div class="meta">
-              {% if item.created_at %}
-                  {{ item.created_at|date:"d-m-Y" }}
-              {% elif item.date %}
-                  {{ item.date|date:"d-m-Y" }}
-              {% elif item.type == 'venue' %}
-                  {{ item.city }} 
-              {% endif %} — 
-              {% if item.type == 'article' %}{{ item.category }}{% elif item.type == 'venue' %}{{ item.city }}{% else %}Event{% endif %}
+              {{ item.city|default:'Location' }} — Venue
             </div>
             <strong>
-              {% if item.title %}{{ item.title|truncatewords:6 }}{% else %}{{ item.name|truncatewords:6 }}{% endif %}
+              {{ item.name|truncatewords:6 }}
             </strong>
           </div>
         </article>
+      {% empty %}
+        <p>No other venues available.</p>
       {% endfor %}
     </div>
   </div>
-
+  
   <div class="upcoming">
     <h2>Upcoming <span>Match</span></h2>
-    <div class="upcoming-box"></div>
+    <div class="upcoming-box">
+        <p>Upcoming matches will be displayed here soon!</p>
+    </div>
   </div>
 </div>
+
+<footer>
+  <small>Copyright @PadelinAja. All Rights Reserved.</small>
+</footer>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -539,8 +294,8 @@ document.addEventListener("DOMContentLoaded", function() {
       { text: "Play Together.", class: "typed-purple" },
       { text: "Grow Together.", class: "typed-yellow" }
     ];
-    const typingDelay = 100;
-    const erasingDelay = 50;
+    const typingDelay = 120;
+    const erasingDelay = 60;
     const newTextDelay = 2000;
     let textArrayIndex = 0;
     let charIndex = 0;
@@ -563,14 +318,15 @@ document.addEventListener("DOMContentLoaded", function() {
         setTimeout(erase, erasingDelay);
       } else {
         textArrayIndex = (textArrayIndex + 1) % textArray.length;
-        setTimeout(type, typingDelay + 1100);
+        setTimeout(type, typingDelay + 500);
       }
     }
 
-    setTimeout(type, newTextDelay);
+    if (textArray.length > 0) {
+        setTimeout(type, newTextDelay / 2);
+    }
   }
 });
 </script>
 
->>>>>>> tkpbp/radit
 {% endblock content %}

@@ -1,56 +1,10 @@
 {% load static %}
-<<<<<<< HEAD
+{% load humanize %}
 
-<article class="venue-card" 
-         data-type="{{ item.type|default:'unknown' }}" 
-         data-id="{{ item.id|default:'0' }}">
-  
-  <div class="card-image">
-    {% if item.thumbnail %}
-      <img src="{{ item.thumbnail }}" 
-           alt="{% if item.title %}{{ item.title }}{% elif item.name %}{{ item.name }}{% endif %}">
-    {% else %}
-      <img src="https://i.imgur.com/aQtTqXG.jpeg" 
-           alt="Placeholder Image">
-    {% endif %}
-  </div>
-
-  <div class="card-content">
-    
-    <div class="card-meta">
-      <span class="date">
-        {% if item.type == 'article' %}
-          {{ item.published_date|date:"d-m-Y" }}
-        {% elif item.type == 'event' %}
-          {{ item.date|date:"d-m-Y" }}
-        {% else %}
-          08-11-2021 {% endif %}
-      </span>
-      <span class="category">
-        | 
-        {% if item.type == 'article' and item.category %}
-          {{ item.category }}
-        {% elif item.type == 'venue' and item.city %}
-          {{ item.city }}
-        {% else %}
-          Category {% endif %}
-      </span>
-    </div>
-
-    <h3 class="card-title">
-      {% if item.title %}
-        {{ item.title }}
-      {% elif item.name %}
-        {{ item.name }}
-      {% else %}
-        Believing neglected so so allowance existence departure.
-      {% endif %}
-=======
 <style>
   .card {
     background: #fff;
     border-radius: 8px;
-    /* border: 1px solid #eee; */ /* Removing border to match Figma */
     transition: box-shadow 0.3s ease;
     overflow: hidden;
     height: 100%;
@@ -60,10 +14,9 @@
   .card:hover {
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   }
-  
   .card-thumbnail {
     position: relative;
-    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    padding-top: 56.25%;
     background-color: #eee;
   }
   .card-thumbnail img {
@@ -78,7 +31,7 @@
     position: absolute;
     top: 12px;
     left: 12px;
-    background: #6A1B9A; /* Purple */
+    background: #6A1B9A;
     color: white;
     padding: 4px 8px;
     border-radius: 4px;
@@ -97,7 +50,6 @@
     font-weight: 700;
     text-transform: capitalize;
   }
-  
   .card-content {
     padding: 20px;
     flex-grow: 1;
@@ -119,9 +71,15 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    text-overflow: ellipsis;
   }
+   .card-title a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.2s ease;
+   }
   .card-title a:hover {
-    color: #6A1B9A; /* Purple */
+    color: #6A1B9A;
     text-decoration: none;
   }
   .card-description {
@@ -134,10 +92,10 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    text-overflow: ellipsis;
   }
-  .card-description .venue-detail { display: block; margin-bottom: 4px; }
+  .card-description .venue-detail { display: block; margin-bottom: 4px; font-size: 0.9rem; }
   .card-description .venue-venue { display: block; margin-top: 8px; font-size: 0.9rem; color: #777; }
-  
   .card-rating {
     display: flex;
     align-items: center;
@@ -146,13 +104,14 @@
     color: #666;
   }
   .card-rating-stars {
-    color: #f5c518; /* Yellow for stars */
+    color: #f5c518;
     margin-right: 8px;
+    letter-spacing: 1px;
   }
-  
   .card-footer {
     border-top: 1px solid #f0f0f0;
     padding-top: 16px;
+    margin-top: auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -160,8 +119,12 @@
   .card-read-more {
     font-weight: 700;
     font-size: 0.9rem;
-    color: #6A1B9A; /* Purple */
+    color: #6A1B9A;
+    text-decoration: none;
   }
+   .card-read-more:hover {
+       text-decoration: underline;
+   }
   .card-actions {
     display: flex;
     gap: 12px;
@@ -170,21 +133,26 @@
     border: none;
     background: none;
     cursor: pointer;
-    font-family: 'Lato', sans-serif;
+    font-family: inherit;
     font-size: 0.9rem;
     font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
   .card-edit-btn { color: #555; }
-  .card-edit-btn:hover { color: #000; }
+  .card-edit-btn:hover { background-color: #eee; color: #333; }
   .card-delete-btn { color: #D9534F; }
-  .card-delete-btn:hover { color: #b00; }
+  .card-delete-btn:hover { background-color: #fdd; color: #D9534F; }
 </style>
 
 <article class="card" data-type="{{ item.type }}" data-id="{{ item.id }}">
-  
+
   <div class="card-thumbnail">
     {% if item.thumbnail %}
-      <img src="{{ item.thumbnail }}" alt="{% if item.title %}{{ item.title }}{% elif item.name %}{{ item.name }}{% endif %}">
+      <img src="{{ item.thumbnail }}" alt="{% if item.name %}{{ item.name }}{% elif item.title %}{{ item.title }}{% endif %} Thumbnail">
+    {% else %}
+      <div style="width:100%; height:100%; background:#eee;"></div>
     {% endif %}
 
     <div class="card-badge">
@@ -195,7 +163,7 @@
       {% elif item.type == 'event' and item.date %}
         {{ item.date|date:"M j, Y" }}
       {% else %}
-        Padel
+        Info
       {% endif %}
     </div>
 
@@ -207,58 +175,45 @@
   <div class="card-content">
 
     <div class="card-meta">
-      
       {% if item.created_at %}
-        <time datetime="{{ item.created_at|date:'c' }}">
-          {{ item.created_at|date:"M j, Y" }}
-        </time>
+        <time datetime="{{ item.created_at|date:'c' }}">{{ item.created_at|date:"M j, Y" }}</time>
       {% elif item.date %}
-        <time datetime="{{ item.date|date:'c' }}">
-          {{ item.date|date:"M j, Y" }}
-        </time>
+        <time datetime="{{ item.date|date:'c' }}">{{ item.date|date:"M j, Y" }}</time>
       {% elif item.type == 'venue' and item.city %}
         <span>📍 {{ item.city }}</span>
       {% endif %}
-
       {% if item.user %}
         <span class="card-meta-user"> • by {{ item.user.username }}</span>
       {% endif %}
     </div>
+
     <h3 class="card-title">
-      <a href="{{ item.detail_url }}">
-        {% if item.title %}{{ item.title }}{% elif item.name %}{{ item.name }}{% endif %}
+      <a href="{% if item.detail_url_name %}{% url item.detail_url_name item.id %}{% else %}#{% endif %}">
+        {% if item.name %}{{ item.name }}{% elif item.title %}{{ item.title }}{% else %}No Title{% endif %}
       </a>
->>>>>>> tkpbp/radit
     </h3>
 
     <p class="card-description">
       {% if item.type == 'article' and item.content %}
-<<<<<<< HEAD
-        {{ item.content|truncatewords:15 }}
+        {{ item.content|striptags|truncatewords:20 }}
       {% elif item.type == 'event' and item.description %}
-        {{ item.description|truncatewords:15 }}
-      {% elif item.type == 'venue' and item.address %}
-        {{ item.address|truncatewords:15 }}
-      {% else %}
-        Blessing welcomed ladyship she met humoured sir breeding her.
-      {% endif %}
-    </p>
-
-    </div>
-=======
-        {{ item.content|truncatewords:20 }}
-      {% elif item.type == 'event' and item.description %}
-        {{ item.description|truncatewords:20 }}
+        {{ item.description|striptags|truncatewords:20 }}
       {% elif item.type == 'venue' %}
         {% if item.address %}<span class="venue-detail">📍 {{ item.address }}</span>{% endif %}
         {% if item.contact %}<span class="venue-detail">📞 {{ item.contact }}</span>{% endif %}
+        {% if item.price_range %}<span class="venue-detail">💰 {{ item.price_range }}</span>{% endif %}
         {% if item.website %}
-          <span class="venue-detail">🔗 
-            <a href="{{ item.website }}" target="_blank">
+          <span class="venue-detail">🔗
+            <a href="{{ item.website }}" target="_blank" rel="noopener noreferrer">
               {{ item.website|truncatechars:30 }}
             </a>
           </span>
         {% endif %}
+        {% if not item.address and not item.contact and not item.website and not item.price_range %}
+          No address or contact information provided.
+        {% endif %}
+      {% else %}
+          Description not available.
       {% endif %}
       {% if item.type == 'event' and item.venue %}
         <span class="venue-venue">📍 Venue: {{ item.venue.name }}</span>
@@ -268,7 +223,7 @@
     {% if item.avg_rating %}
       <div class="card-rating">
         <span class="card-rating-stars">
-          {% for i in "12345"|slice:":5" %}
+          {% for i in "12345" %}
             {% if forloop.counter <= item.avg_rating|floatformat:0 %}★{% else %}☆{% endif %}
           {% endfor %}
         </span>
@@ -277,7 +232,7 @@
     {% endif %}
 
     <div class="card-footer">
-      <a href="{{ item.detail_url }}" class="card-read-more">
+      <a href="{% if item.detail_url_name %}{% url item.detail_url_name item.id %}{% else %}#{% endif %}" class="card-read-more">
         Read more →
       </a>
       {% if user.is_authenticated and item.user == user %}
@@ -293,7 +248,6 @@
         </div>
       {% endif %}
     </div>
-    
+
   </div>
->>>>>>> tkpbp/radit
 </article>

@@ -2,200 +2,15 @@
 {% load humanize %}
 {% block content %}
 
-{% include 'navbar.html' %}
 
 <style>
-  /* Reset & Basic Styles */
-  body {
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    margin: 0;
-    padding: 0;
-    background: #FEF9F9;
-    color: #333;
-  }
-  .container {
-    max-width: 1100px;
-    margin: 24px auto;
-    padding: 16px;
-  }
-
-  /* Page Header */
-  .page-header { margin: 24px 0; }
-  .page-header h1 { font-size: 2.5rem; font-weight: 700; color: #000000; margin: 0; }
-  .page-header h1 .highlight { color: #6A1B9A; }
-
-  /* ======================================= */
-  /* NEW SEARCH BAR STYLES (Venue Style)   */
-  /* ======================================= */
-  .search-bar {
-    display: flex;
-    flex-wrap: wrap; /* Agar bisa turun baris di layar kecil */
-    gap: 16px;
-    align-items: center;
-    margin-bottom: 32px; /* Jaga jarak bawah */
-    background: none;
-    box-shadow: none;
-    padding: 0;
-  }
-  .search-input {
-    flex: 1; /* Biarkan input mengisi ruang */
-    padding: 12px 16px;
-    font-size: 1rem;
-    border: 2px solid #6A1B9A; /* Border ungu */
-    border-radius: 8px;
-    min-width: 180px; /* Lebar minimum */
-    box-sizing: border-box; /* Agar padding tidak merusak layout */
-  }
-  .search-input::placeholder {
-    color: #aaa;
-  }
-  select.search-input {
-    appearance: none; /* Hapus tampilan default dropdown */
-    background-color: white; /* Pastikan ada background */
+  select.tailwind-search-input {
+    appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 1rem center;
     background-size: 1em;
-    padding-right: 2.5rem; /* Ruang untuk panah */
   }
-  .search-btn, .add-btn {
-    padding: 12px 24px;
-    font-size: 1rem;
-    font-weight: 700;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    text-decoration: none;
-    text-align: center;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-  }
-  .search-btn {
-    background-color: #6A1B9A; /* Ungu */
-    color: white;
-  }
-  .search-btn:hover {
-    background-color: #5a1683; /* Ungu lebih gelap */
-    transform: translateY(-2px);
-  }
-  .add-btn {
-    background-color: #FFED2C; /* Kuning */
-    color: #000;
-  }
-   .add-btn:hover {
-    background-color: #f0de20; /* Kuning lebih gelap */
-    transform: translateY(-2px);
-  }
-  /* ======================================= */
-  /* END NEW SEARCH BAR STYLES             */
-  /* ======================================= */
-
-  /* Event Grid */
-  .event-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
-  @media (max-width: 768px) {
-    .event-grid { grid-template-columns: 1fr; }
-    .search-bar { flex-direction: column; align-items: stretch; } /* Update for responsiveness */
-  }
-
-  /* Event Card Wrapper */
-  .event-card-wrapper {
-    background: #FFFFFF;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    border: 1px solid #f0f0f0;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  .event-card-wrapper:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.07);
-  }
-
-  /* Bagian Atas Kartu (Klik) */
-  .event-card-clickable {
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
-    padding: 24px;
-    cursor: pointer;
-  }
-  .card-logo img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #f0f0f0; }
-  .card-details { flex: 1; }
-  .card-details h2 { font-size: 1.5rem; font-weight: 600; color: #000000; margin: 0 0 4px 0; }
-  .card-details .subtitle { font-size: 0.95rem; color: #666; margin: 0 0 16px 0; }
-  .card-details ul { list-style: none; padding: 0; margin: 0; }
-  .card-details li { display: flex; align-items: center; color: #333; margin-bottom: 10px; font-size: 0.9rem; }
-  .card-details .icon { width: 16px; height: 16px; margin-right: 12px; fill: #555; flex-shrink: 0; }
-
-  /* Tombol di Kartu */
-  .card-actions {
-    display: flex;
-    justify-content: right; /* Tetap di kanan */
-    gap: 8px;
-    padding: 15px 20px 20px 20px; /* Padding atas 15px */
-    border-top: 1px solid #f5f5f5;
-    margin-top: 10px;
-  }
-
-  /* ============================================ */
-  /* NEW TRANSPARENT BUTTON STYLES FOR CARD     */
-  /* ============================================ */
-  /* Tombol Edit di Kartu */
-  /* Tombol Edit di Kartu */
-  .btn-edit-card {
-    background-color: transparent; /* Background awal transparan */
-    color: #555;                 /* Warna teks abu-abu gelap */
-    border: 1px solid transparent;
-    border-radius: 4px;         /* Bentuk kotak */
-    padding: 8px 16px;
-    font-weight: 600;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease; /* Transisi background & color */
-  }
-  .btn-edit-card:hover {
-    background-color: #eee;     /* Background abu-abu terang pas hover */
-    color: #555;                 /* Teks tetap abu-abu gelap */
-  }
-
-  /* Tombol Delete di Kartu */
-  .btn-delete-card {
-    background-color: transparent; /* Background awal transparan */
-    color: #D9534F;             /* Warna teks merah */
-    border: 1px solid transparent;
-    border-radius: 4px;         /* Bentuk kotak */
-    padding: 8px 16px;
-    font-weight: 600;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease; /* Transisi background & color */
-  }
-  .btn-delete-card:hover {
-    background-color: #fdd;     /* Background merah muda pas hover */
-    color: #D9534F;             /* Teks tetap merah */
-  }
-  /* ============================================ */
-  /* END NEW BUTTON STYLES                      */
-  /* ============================================ */
-
-  /* Modal styles (Perbaikan display & centering) */
-  .modal {
-    display: none;
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.4); z-index: 1001; overflow-y: auto;
-    align-items: center; justify-content: center; padding: 20px;
-  }
-  .modal.is-active { display: flex; } /* Show modal with flex */
-  .modal .modal-content {
-    background: #fff; max-width: 800px; width: 100%; margin: 0;
-    padding: 24px; border-radius: 8px; box-shadow: 0 2px 8px #0002; position: relative;
-  }
-  .modal .modal-close { position:absolute; top:12px; right:16px; font-size:1.5em; background:none; border:none; cursor:pointer; font-weight: bold; color: #888; transition: color 0.2s ease; }
-  .modal .modal-close:hover { color: #000; }
-  #addEventFormMsg, #editEventFormMsg { margin-top: 12px; font-weight: 600; }
-  .btn-submit-form { width: 100%; margin-top: 16px; background-color: #6A1B9A; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: background-color 0.2s ease, transform 0.2s ease;}
-  .btn-submit-form:hover { background-color: #5a1683; transform: translateY(-2px); }
-
-  /* Footer */
-  footer { text-align: center; color: #666; padding: 24px 0; font-size: 0.9rem; border-top: 1px solid #eee; margin-top: 40px; }
 </style>
 
 <svg width="0" height="0" style="display:none;">
@@ -206,51 +21,67 @@
     <symbol id="icon-user" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></symbol>
 </svg>
 
-<main class="container" role="main">
+<main class="max-w-6xl mx-auto py-6 px-4" role="main">
 
-  <div class="page-header">
-    <h1>FIND YOUR NEXT <span class="highlight">MATCH</span></h1>
+  <div class="my-6">
+    <h1 class="text-4xl font-bold text-black m-0">FIND YOUR NEXT <span class="text-purple-700">MATCH</span></h1>
   </div>
 
-  <form class="search-bar" action="{% url 'main:event_page' %}" method="GET">
-    <input type="text" name="q" class="search-input" placeholder="Search Event Name/Desc" value="{{ search_query|default:'' }}">
-    <select name="city" class="search-input">
-      <option value="">Choose City</option>
-      <option value="jakarta" {% if city_filter == 'jakarta' %}selected{% endif %}>Jakarta</option>
-      <option value="bogor" {% if city_filter == 'bogor' %}selected{% endif %}>Bogor</option>
-      <option value="bandung" {% if city_filter == 'bandung' %}selected{% endif %}>Bandung</option>
-    </select>
-    <select name="price" class="search-input">
-      <option value="">Choose Price Range</option>
-      <option value="<100k" {% if price_filter == '<100k' %}selected{% endif %}>&lt; Rp 100.000</option>
-      <option value="100k-200k" {% if price_filter == '100k-200k' %}selected{% endif %}>Rp 100.000 - Rp 200.000</option>
-      <option value=">200k" {% if price_filter == '>200k' %}selected{% endif %}>&gt; Rp 200.000</option>
-    </select>
-    <button type="submit" class="search-btn">Search</button> {% if user.is_authenticated %}
-      <a href="#" id="publishBtn" class="add-btn">+ Add Events</a> {% endif %}
+  <form class="flex flex-col md:flex-row items-stretch md:items-center gap-4 mb-8" action="{% url 'main:event_page' %}" method="GET">
+    
+    <div class="relative flex items-center flex-1 min-w-[180px]">
+      <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 fill-gray-500 pointer-events-none"><use href="#icon-search"></use></svg>
+      <input type="text" name="q" class="w-full p-3 pl-12 text-base border-2 border-purple-700 rounded-lg box-border placeholder-gray-400" placeholder="Search Event Name/Desc" value="{{ search_query|default:'' }}">
+    </div>
+
+    <div class="relative flex items-center flex-1 min-w-[180px]">
+      <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 fill-gray-500 pointer-events-none"><use href="#icon-map-pin"></use></svg>
+      <select name="city" class="w-full p-3 pl-12 text-base border-2 border-purple-700 rounded-lg box-border bg-white tailwind-search-input">
+        <option value="">Choose City</option>
+        <option value="jakarta" {% if city_filter == 'jakarta' %}selected{% endif %}>Jakarta</option>
+        <option value="bogor" {% if city_filter == 'bogor' %}selected{% endif %}>Bogor</option>
+        <option value="bandung" {% if city_filter == 'bandung' %}selected{% endif %}>Bandung</option>
+      </select>
+    </div>
+
+    <div class="relative flex items-center flex-1 min-w-[180px]">
+      <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 fill-gray-500 pointer-events-none"><use href="#icon-dollar"></use></svg>
+      <select name="price" class="w-full p-3 pl-12 text-base border-2 border-purple-700 rounded-lg box-border bg-white tailwind-search-input">
+        <option value="">Choose Price Range</option>
+        <option value="<100k" {% if price_filter == '<100k' %}selected{% endif %}>&lt; Rp 100.000</option>
+        <option value="100k-200k" {% if price_filter == '100k-200k' %}selected{% endif %}>Rp 100.000 - Rp 200.000</option>
+        <option value=">200k" {% if price_filter == '>200k' %}selected{% endif %}>&gt; Rp 200.000</option>
+      </select>
+    </div>
+
+    <button type="submit" class="py-3 px-6 text-base font-bold text-white bg-purple-700 rounded-lg cursor-pointer transition hover:bg-purple-800 hover:-translate-y-0.5">Search</button> 
+    {% if user.is_authenticated %}
+      <a href="#" id="publishBtn" class="py-3 px-6 text-base font-bold text-black bg-yellow-300 rounded-lg cursor-pointer transition text-center hover:bg-yellow-400 hover:-translate-y-0.5">+ Add Events</a> 
+    {% endif %}
   </form>
-  <div class="event-grid" id="eventGrid">
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="eventGrid">
     {% for event in events %}
-      <div class="event-card-wrapper">
-        <div class="event-card-clickable" data-id="{{ event.id }}">
-          <div class="card-logo">
-            <img src="{{ event.image_url|default:'https://placehold.co/80x80/FEF9F9/6A1B9A?text=RQ' }}" alt="{{ event.name }} logo">
+      <div class="bg-white rounded-xl shadow-md border border-gray-100 transition hover:-translate-y-1 hover:shadow-lg">
+        <div class="flex items-start gap-5 p-6 cursor-pointer" data-id="{{ event.id }}">
+          <div class="shrink-0">
+            <img class="w-20 h-20 rounded-full object-cover border-2 border-gray-100" src="{{ event.image_url|default:'https://placehold.co/80x80/FEF9F9/6A1B9A?text=RQ' }}" alt="{{ event.name }} logo">
           </div>
-          <div class="card-details">
-            <h2>{{ event.name }}</h2>
-            <p class="subtitle">{{ event.type }}</p>
-            <ul>
-              <li><svg class="icon"><use href="#icon-calendar"></use></svg> {{ event.date|date:"d F Y, H:i" }} WIB</li>
-              <li><svg class="icon"><use href="#icon-map-pin"></use></svg> {{ event.venue.name }}</li>
-              <li><svg class="icon"><use href="#icon-dollar"></use></svg> Rp {{ event.price|intcomma }}</li>
+          <div class="flex-1">
+            <h2 class="text-2xl font-semibold text-black mb-1">{{ event.name }}</h2>
+            <p class="text-base text-gray-500 mb-4">{{ event.type }}</p>
+            <ul class="list-none p-0 m-0 space-y-2">
+              <li class="flex items-center text-gray-800 text-sm"><svg class="w-4 h-4 mr-3 fill-gray-600 shrink-0"><use href="#icon-calendar"></use></svg> {{ event.date|date:"d F Y, H:i" }} WIB</li>
+              <li class="flex items-center text-gray-800 text-sm"><svg class="w-4 h-4 mr-3 fill-gray-600 shrink-0"><use href="#icon-map-pin"></use></svg> {{ event.venue.name }}</li>
+              <li class="flex items-center text-gray-800 text-sm"><svg class="w-4 h-4 mr-3 fill-gray-600 shrink-0"><use href="#icon-dollar"></use></svg> Rp {{ event.price|intcomma }}</li>
             </ul>
           </div>
         </div>
 
         {% if user.is_authenticated and event.user == user %}
-          <div class="card-actions">
-            <button class="btn-edit-card" data-id="{{ event.id }}">Edit</button>
-            <button class="btn-delete-card" data-id="{{ event.id }}">Delete</button>
+          <div class="flex justify-end gap-2 px-5 pb-5 pt-4 border-t border-gray-100 mt-2">
+            <button class="bg-transparent text-gray-600 border border-transparent rounded px-4 py-2 font-semibold text-sm cursor-pointer transition hover:bg-gray-100" data-id="{{ event.id }}">Edit</button>
+            <button class="bg-transparent text-red-600 border border-transparent rounded px-4 py-2 font-semibold text-sm cursor-pointer transition hover:bg-red-100" data-id="{{ event.id }}">Delete</button>
           </div>
         {% endif %}
       </div>
@@ -260,45 +91,46 @@
   </div>
 </main>
 
-<div id="detailModal" class="modal"> 
-    <div class="modal-content">
-      <button id="closeDetailModal" class="modal-close">&times;</button>
+<div id="detailModal" class="hidden fixed inset-0 w-screen h-screen bg-black/40 z-[1001] overflow-y-auto items-center justify-center p-5"> 
+    <div class="bg-white max-w-3xl w-full m-0 p-6 rounded-lg shadow-lg relative">
+      <button id="closeDetailModal" class="absolute top-3 right-4 text-2xl bg-none border-none cursor-pointer font-bold text-gray-500 transition hover:text-black">&times;</button>
       <div id="detailContentContainer"> 
         </div>
     </div>
-  </div>
+</div>
   
-  <div id="addEventModal" class="modal"> 
-    <div class="modal-content">
-      <button id="closeAddEventModal" class="modal-close">&times;</button>
-      <h2>Add New Event</h2>
+<div id="addEventModal" class="hidden fixed inset-0 w-screen h-screen bg-black/40 z-[1001] overflow-y-auto items-center justify-center p-5"> 
+    <div class="bg-white max-w-3xl w-full m-0 p-6 rounded-lg shadow-lg relative">
+      <button id="closeAddEventModal" class="absolute top-3 right-4 text-2xl bg-none border-none cursor-pointer font-bold text-gray-500 transition hover:text-black">&times;</button>
+      <h2 class="text-2xl font-bold mb-4">Add New Event</h2>
       <div id="addEventFormContainer">
-        </div>
-      <div id="addEventFormMsg"></div> </div>
-  </div>
+      </div>
+      <div id="addEventFormMsg" class="mt-3 font-semibold"></div> 
+    </div>
+</div>
   
-  <div id="editEventModal" class="modal"> 
-    <div class="modal-content">
-      <button id="closeEditEventModal" class="modal-close">&times;</button>
-      <h2>Edit Event</h2>
+<div id="editEventModal" class="hidden fixed inset-0 w-screen h-screen bg-black/40 z-[1001] overflow-y-auto items-center justify-center p-5"> 
+    <div class="bg-white max-w-3xl w-full m-0 p-6 rounded-lg shadow-lg relative">
+      <button id="closeEditEventModal" class="absolute top-3 right-4 text-2xl bg-none border-none cursor-pointer font-bold text-gray-500 transition hover:text-black">&times;</button>
+      <h2 class="text-2xl font-bold mb-4">Edit Event</h2>
       <div id="editEventFormContainer">
-        </div>
-      <div id="editEventFormMsg"></div> </div>
-  </div>
+      </div>
+      <div id="editEventFormMsg" class="mt-3 font-semibold"></div> 
+    </div>
+</div>
   
-  <footer>
+<footer class="text-center text-gray-500 py-6 text-sm border-t border-gray-200 mt-10">
     <small>Copyright @PadelinAja. All Rights Reserved.</small>
-  </footer>
+</footer>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         
-        // --- Variabel Modal ---
         const detailModal = document.getElementById('detailModal');
         const closeDetailModal = document.getElementById('closeDetailModal');
         const detailContentContainer = document.getElementById('detailContentContainer');
         const addEventModal = document.getElementById('addEventModal');
-        const addEventBtn = document.getElementById('publishBtn'); // Tombol '+ Add Events'
+        const addEventBtn = document.getElementById('publishBtn'); 
         const closeAddEventModal = document.getElementById('closeAddEventModal');
         const addEventFormContainer = document.getElementById('addEventFormContainer');
         const addEventFormMsg = document.getElementById('addEventFormMsg');
@@ -308,16 +140,19 @@
         const editEventFormMsg = document.getElementById('editEventFormMsg');
         const eventGrid = document.getElementById('eventGrid');
     
-        // === Fungsi Buka/Tutup Modal ===
         function openModal(modalElement) {
-            if(modalElement) modalElement.classList.add('is-active'); 
+            if(modalElement) {
+                modalElement.classList.remove('hidden');
+                modalElement.classList.add('flex');
+            }
         }
         function closeModal(modalElement) {
-            if(modalElement) modalElement.classList.remove('is-active'); 
+            if(modalElement) {
+                modalElement.classList.add('hidden');
+                modalElement.classList.remove('flex');
+            }
         }
     
-        // --- Penanganan Modal Add Event ---
-        // Pastikan tombolnya ada sebelum menambahkan listener
         if (addEventBtn) {
             addEventBtn.onclick = function(e) {
                 e.preventDefault();
@@ -330,25 +165,24 @@
                         if(data.html) {
                             addEventFormContainer.innerHTML = data.html; 
                             attachFormHandler(addEventFormContainer, addEventFormMsg, addEventModal); 
+                            applyTailwindToForm(addEventFormContainer);
                         } else { addEventFormContainer.innerHTML = '<p>Error: Could not load form.</p>'; }
                     })
                     .catch(error => { console.error('Error fetching event form:', error); });
             }
         } else {
-            console.warn("Add Event button ('#publishBtn') not found."); // Pesan jika tombol tidak ada (misal user belum login)
+            console.warn("Add Event button ('#publishBtn') not found."); 
         }
     
-        // --- Event Listener Terpusat di Grid ---
-        // Pastikan gridnya ada
         if (eventGrid) {
             eventGrid.addEventListener('click', function(e) {
-                const clickableCard = e.target.closest('.event-card-clickable');
-                const editButton = e.target.closest('.btn-edit-card');
-                const deleteButton = e.target.closest('.btn-delete-card');
+                const clickableCard = e.target.closest('div[data-id]');
+                const editButton = e.target.closest('button[data-id].bg-transparent');
+                const deleteButton = e.target.closest('button[data-id].text-red-600');
     
-                // --- Klik Tombol DELETE ---
                 if (deleteButton) {
                     e.preventDefault();
+                    e.stopPropagation();
                     const eventId = deleteButton.dataset.id;
                     if (confirm('Are you sure you want to delete this event?')) {
                         const csrfToken = document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
@@ -366,9 +200,9 @@
                     return; 
                 }
     
-                // --- Klik Tombol EDIT ---
                 if (editButton) {
                     e.preventDefault();
+                    e.stopPropagation();
                     const eventId = editButton.dataset.id;
                     editEventFormContainer.innerHTML = '<p>Loading edit form...</p>';
                     editEventFormMsg.textContent = '';
@@ -380,13 +214,13 @@
                         if (data.html) {
                             editEventFormContainer.innerHTML = data.html;
                             attachFormHandler(editEventFormContainer, editEventFormMsg, editEventModal);
+                            applyTailwindToForm(editEventFormContainer);
                         } else { editEventFormContainer.innerHTML = '<p>Sorry, edit form could not be loaded.</p>'; }
                     })
                     .catch(error => { console.error('Error fetching edit form:', error); });
                     return; 
                 }
     
-                // --- Klik Area KARTU ---
                 if (clickableCard) {
                     const eventId = clickableCard.dataset.id;
                     detailContentContainer.innerHTML = '<p>Loading details...</p>';
@@ -395,7 +229,10 @@
                     fetch(`/ajax_event_detail/${eventId}/`, { headers: {'X-Requested-With': 'XMLHttpRequest'} })
                     .then(response => response.json())
                     .then(data => {
-                        if (data.html) { detailContentContainer.innerHTML = data.html; } 
+                        if (data.html) { 
+                            detailContentContainer.innerHTML = data.html; 
+                            applyTailwindToDetail(detailContentContainer);
+                        } 
                         else { detailContentContainer.innerHTML = '<p>Sorry, details could not be loaded.</p>'; }
                     })
                     .catch(error => { console.error('Error fetching event details:', error); });
@@ -405,10 +242,15 @@
              console.warn("Event grid ('#eventGrid') not found.");
         }
     
-        // --- Fungsi Handler Form ---
         function attachFormHandler(formContainer, msgContainer, modalInstance) {
             const form = formContainer.querySelector('form'); 
             if (!form) return;
+
+            const submitButton = form.querySelector('button[type="submit"]');
+            if(submitButton) {
+                submitButton.classList.add('w-full', 'mt-4', 'bg-purple-700', 'text-white', 'p-3', 'border-none', 'rounded-lg', 'cursor-pointer', 'font-bold', 'transition', 'hover:bg-purple-800', 'hover:-translate-y-0.5');
+            }
+
             form.onsubmit = function(e) {
                 e.preventDefault();
                 msgContainer.textContent = '';
@@ -429,7 +271,7 @@
                         msgContainer.style.color = '#b00';
                         msgContainer.textContent = 'Please correct the errors in the form.';
                         if (res.errors && typeof res.errors === 'string') {
-                             try { // Coba parse jika error-nya JSON string
+                             try { 
                                 const errors = JSON.parse(res.errors); 
                                 form.querySelectorAll('.form-error').forEach(el => el.remove());
                                 for (const fieldName in errors) {
@@ -438,18 +280,16 @@
                                     if (field && errorList.length > 0) {
                                         const errorEl = document.createElement('div');
                                         errorEl.className = 'form-error';
-                                        errorEl.style.color = '#b00';
-                                        errorEl.style.fontSize = '0.85rem';
-                                        errorEl.style.marginTop = '4px';
+                                        errorEl.classList.add('text-red-700', 'text-sm', 'mt-1');
                                         errorEl.textContent = errorList.map(e => e.message).join(' ');
                                         field.parentNode.insertBefore(errorEl, field.nextSibling);
                                     }
                                 }
                             } catch (e) { 
-                                 msgContainer.textContent = res.errors; // Jika bukan JSON, tampilkan string error
+                                 msgContainer.textContent = res.errors; 
                                  console.error('Could not parse form errors JSON:', e); 
                             }
-                        } else if (typeof res.errors === 'string') { // Jika error sudah string
+                        } else if (typeof res.errors === 'string') { 
                              msgContainer.textContent = res.errors;
                         }
                     }
@@ -457,8 +297,72 @@
                 .catch(error => { console.error('Error submitting form:', error); });
             };
         }
+
+        function applyTailwindToForm(formContainer) {
+            formContainer.querySelectorAll('.form-group').forEach(group => {
+                group.classList.add('mb-4');
+            });
+            formContainer.querySelectorAll('label').forEach(label => {
+                label.classList.add('block', 'font-semibold', 'text-sm', 'mb-1', 'text-gray-700');
+            });
+            formContainer.querySelectorAll('input:not([type="checkbox"]), select, textarea').forEach(input => {
+                input.classList.add('w-full', 'p-2.5', 'border', 'border-gray-300', 'rounded-md', 'box-border', 'text-base', 'focus:border-purple-500', 'focus:ring', 'focus:ring-purple-200', 'focus:outline-none');
+                if(input.tagName === 'SELECT') {
+                    input.classList.add('appearance-none', 'bg-white', 'tailwind-search-input');
+                }
+            });
+        }
+
+        function applyTailwindToDetail(detailContainer) {
+            detailContainer.querySelectorAll('.detail-container-flex').forEach(el => {
+                el.classList.add('flex', 'flex-col', 'md:flex-row', 'items-center', 'gap-5');
+            });
+            detailContainer.querySelectorAll('.detail-left-col').forEach(el => {
+                el.classList.add('flex-1', 'text-center');
+            });
+            detailContainer.querySelectorAll('.detail-left-col img').forEach(el => {
+                el.classList.add('w-40', 'h-40', 'rounded-full', 'border-4', 'border-gray-100', 'mb-5', 'mx-auto');
+            });
+            detailContainer.querySelectorAll('.detail-left-col h2').forEach(el => {
+                el.classList.add('text-4xl', 'font-bold', 'text-black', 'mb-2', 'leading-tight');
+            });
+            detailContainer.querySelectorAll('.detail-left-col .detail-category').forEach(el => {
+                el.classList.add('text-base', 'text-gray-500');
+            });
+            detailContainer.querySelectorAll('.detail-divider').forEach(el => {
+                el.classList.add('w-full', 'md:w-px', 'md:self-stretch', 'bg-gray-200', 'h-px', 'md:h-auto', 'my-4', 'md:my-0', 'md:mx-2');
+            });
+            detailContainer.querySelectorAll('.detail-right-col').forEach(el => {
+                el.classList.add('flex-1.5', 'w-full', 'flex', 'flex-col', 'gap-7');
+            });
+            detailContainer.querySelectorAll('.detail-header-right').forEach(el => {
+                el.classList.add('flex', 'flex-col', 'sm:flex-row', 'justify-between', 'items-center', 'gap-4');
+            });
+            detailContainer.querySelectorAll('.detail-price').forEach(el => {
+                el.classList.add('text-3xl', 'font-bold', 'text-purple-700', 'whitespace-nowrap');
+            });
+            detailContainer.querySelectorAll('.btn-contact').forEach(el => {
+                el.classList.add('bg-yellow-300', 'text-black', 'py-3', 'px-7', 'rounded-full', 'font-semibold', 'text-base', 'cursor-pointer', 'no-underline', 'transition', 'whitespace-nowrap', 'shrink-0', 'hover:bg-yellow-400', 'hover:-translate-y-0.5');
+            });
+            detailContainer.querySelectorAll('.detail-info-group').forEach(el => {
+                el.classList.add('flex', 'items-start', 'gap-4');
+            });
+            detailContainer.querySelectorAll('.detail-info-group .icon').forEach(el => {
+                el.classList.add('w-6', 'h-6', 'fill-gray-800', 'mt-1', 'shrink-0');
+            });
+            detailContainer.querySelectorAll('.detail-info-group .info-content').forEach(el => {
+                el.classList.add('flex', 'flex-col');
+            });
+            detailContainer.querySelectorAll('.detail-info-group .info-content strong').forEach(el => {
+                el.classList.add('text-lg', 'font-bold', 'text-black', 'mb-1');
+            });
+            detailContainer.querySelectorAll('.detail-info-group .info-content span').forEach(el => {
+                el.classList.add('text-base', 'text-gray-600', 'leading-normal');
+            });
+
+            detailContainer.querySelectorAll('script').forEach(el => el.remove());
+        }
     
-        // --- Fungsi Penutup Modal ---
         if(closeDetailModal) closeDetailModal.onclick = () => { closeModal(detailModal); }
         if(closeAddEventModal) closeAddEventModal.onclick = () => { closeModal(addEventModal); }
         if(closeEditEventModal) closeEditEventModal.onclick = () => { closeModal(editEventModal); }
