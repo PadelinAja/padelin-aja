@@ -20,6 +20,10 @@ ALLOWED_HOSTS = [
     "roben-joseph-padelinaja.pbp.cs.ui.ac.id",
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://roben-joseph-padelinaja.pbp.cs.ui.ac.id',
+]
+
 
 INSTALLED_APPS = [
     'main',
