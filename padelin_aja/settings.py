@@ -1,3 +1,7 @@
+"""
+Django settings for padelin_aja project.
+"""
+
 from pathlib import Path
 import os
 from dotenv import load_dotenv
@@ -7,6 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-#*l_#)k$hz4-zjn(adcl@brg98i+56)^%$kieyfit6k7_zd)u8")
 PRODUCTION = os.getenv("PRODUCTION", "False").lower() == "true"
+
 DEBUG = not PRODUCTION
 
 ALLOWED_HOSTS = [
@@ -14,6 +19,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "roben-joseph-padelinaja.pbp.cs.ui.ac.id",
 ]
+
 
 INSTALLED_APPS = [
     'main',
@@ -38,6 +44,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "padelin_aja.urls"
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -54,6 +61,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "padelin_aja.wsgi.application"
+
 
 if PRODUCTION:
     DATABASES = {
@@ -77,14 +85,17 @@ else:
         }
     }
 
+
 LOGIN_URL = "/login/"
-LOGOUT_REDIRECT_URL = "/"
-LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"        
+LOGIN_REDIRECT_URL = "/"         
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend"
 ]
 
+
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -93,8 +104,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
+
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = "Asia/Jakarta"
+TIME_ZONE = "Asia/Jakarta"  
 USE_I18N = True
 USE_TZ = True
 
@@ -102,6 +114,10 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "main" / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.2/howto/static-files/
+
 STATIC_URL = 'static/'
+
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

@@ -5,7 +5,6 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 
-
 class Venue(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
@@ -15,8 +14,6 @@ class Venue(models.Model):
     website = models.URLField(blank=True, null=True)
     image_url = models.URLField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-
-    # Extended fields
     price_range = models.CharField(max_length=100, blank=True, null=True)
     facilities = models.TextField(blank=True, null=True)
     image_url_2 = models.URLField(blank=True, null=True)
@@ -27,8 +24,8 @@ class Venue(models.Model):
     def __str__(self):
         return self.name
 
-
 class Article(models.Model):
+
     class CategoryChoices(models.TextChoices):
         BEGINNER = 'Beginner Guides', 'Beginner Guides'
         TECHNIQUE = 'Technique & Strategy', 'Technique & Strategy'
@@ -50,8 +47,8 @@ class Article(models.Model):
     def __str__(self):
         return self.title
 
-
 class Events(models.Model):
+
     class MatchType(models.TextChoices):
         FUN_MATCH = 'Fun Match', 'Fun Match'
         TURNAMEN = 'Turnamen', 'Turnamen'
@@ -73,31 +70,15 @@ class Events(models.Model):
     def __str__(self):
         return self.name
 
-
 class Rating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     anonymous_name = models.CharField(max_length=100, blank=True, null=True)
-
     score = models.IntegerField()
     comment = models.TextField(blank=True, null=True)
-
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.UUIDField()  # matches UUID PKs used in this app
+    object_id = models.UUIDField()
     content_object = GenericForeignKey('content_type', 'object_id')
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'content_type', 'object_id')
-
-
-class Comment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.UUIDField()  # align with UUID primary keys
-    content_object = GenericForeignKey('content_type', 'object_id')
-    text = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Comment by {self.user.username} on {self.content_object}"
+        pass

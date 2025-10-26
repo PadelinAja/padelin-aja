@@ -1,0 +1,73 @@
+{% load static %}
+<nav class="bg-transparent">
+  <div class="max-w-[1200px] mx-auto flex items-center justify-between px-8 py-4">
+    <!-- Left: Logo -->
+    <a href="{% url 'main:show_main' %}" class="shrink-0 flex items-center">
+      <img
+        src="{% static 'image/PadelinAja Logo.png' %}"
+        alt="PadelinAja"
+        class="h-28 w-28 object-contain select-none"
+      />
+    </a>
+
+    <!-- Middle: Links -->
+    <div class="ml-14 md:ml-20 flex-1">
+      <div class="hidden md:flex items-center gap-6 text-[15px] md:text-[16px] font-medium leading-snug">
+        <a href="{% url 'main:show_main' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'show_main' %}active{% endif %}">
+          Home
+        </a>
+
+        <a href="{% url 'main:show_venues' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'show_venues' %}active{% endif %}">
+          Venues
+        </a>
+
+        <a href="{% url 'main:article_list' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'article_list' %}active{% endif %}">
+          Blogs
+        </a>
+
+        <a href="{% url 'main:event_page' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'event_page' %}active{% endif %}">
+          Events
+        </a>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4 -translate-x-6 md:-translate-x-8">
+      {% if user.is_authenticated %}
+        <span class="font-medium text-[#333] hidden sm:inline">Hello, {{ user.username }}</span>
+        <a href="{% url 'main:logout' %}"
+           class="inline-flex items-center font-semibold text-[14px] px-4 py-2 rounded-full bg-[#f0f0f0] text-[#888] hover:bg-[#e0e0e0] transition">
+          Logout
+        </a>
+      {% else %}
+        <a href="{% url 'main:login' %}"
+           class="inline-flex items-center font-semibold text-[14px] px-4 py-2 rounded-full text-[#6A1B9A] hover:bg-[#f4e9fa] transition">
+          Log In
+        </a>
+        <a href="{% url 'main:register' %}"
+           class="inline-flex items-center font-semibold text-[14px] px-4 py-2 rounded-full bg-[#FFED2C] text-[#111] hover:brightness-95 transition">
+          Join Us →
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <style>
+    .nav-link {
+      text-decoration: none;
+      color: #555;
+      padding-bottom: 4px;
+      border-bottom: 2px solid transparent;
+      transition: color .2s ease, border-color .2s ease;
+    }
+    .nav-link:hover { color: #6A1B9A; }
+    .nav-link.active {
+      color: #6A1B9A;
+      font-weight: 700;
+      border-bottom-color: #6A1B9A;
+    }
+  </style>
+</nav>

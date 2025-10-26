@@ -4,28 +4,71 @@
 {% block content %}
 
 <style>
-  select.tailwind-search-input {
+  select.tailwind-select-arrow {
     appearance: none;
+    -webkit-appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 1rem center;
     background-size: 1em;
+    padding-right: 2.5rem;
   }
 </style>
 
 <svg width="0" height="0" style="display:none;">
+    <symbol id="icon-search" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></symbol>
+    <symbol id="icon-tag" viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></symbol>
 </svg>
 
 <main class="max-w-6xl mx-auto py-6 px-4" role="main">
 
   <div class="my-6 mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
     <h1 class="text-4xl font-bold text-black m-0">BLOGS <span class="text-purple-700">AND </span>UPDATES</h1>
-    {% if user.is_authenticated %}
-      <a href="#" id="addBlogBtn" class="py-3 px-6 text-base font-bold text-white bg-purple-700 rounded-lg cursor-pointer transition no-underline hover:bg-purple-800 hover:-translate-y-0.5">+ Add Blog</a>
-    {% endif %}
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="blogGrid"> 
+  <form class="flex flex-col md:flex-row flex-wrap gap-4 items-center mb-8" action="{% url 'main:article_list' %}" method="GET">
+    
+    <div class="relative w-full md:flex-1">
+      <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="currentColor" viewBox="0 0 20 20"><use href="#icon-search"></use></svg>
+      <input type="text" name="q" 
+             class="w-full py-3 px-4 pl-10 text-base border-2 border-purple-700 rounded-lg box-border placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500" 
+             placeholder="Search Title/Content" value="{{ search_query|default:'' }}">
+    </div>
+
+    <div class="relative w-full md:flex-1">
+      <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="currentColor" viewBox="0 0 20 20"><use href="#icon-tag"></use></svg>
+      <select name="category" 
+              class="w-full py-3 px-4 pl-10 text-base border-2 border-purple-700 rounded-lg box-border bg-white tailwind-select-arrow focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500">
+        <option value="">Choose Category</option>
+        <option value="Beginner Guides" {% if category_filter == 'Beginner Guides' %}selected{% endif %}>
+          Beginner Guides
+        </option>
+        <option value="Technique & Strategy" {% if category_filter == 'Technique & Strategy' %}selected{% endif %}>
+          Technique & Strategy
+        </option>
+        <option value="Fitness & Warm-Ups" {% if category_filter == 'Fitness & Warm-Ups' %}selected{% endif %}>
+          Fitness & Warm-Ups
+        </option>
+        <option value="Coaching Insights" {% if category_filter == 'Coaching Insights' %}selected{% endif %}>
+          Coaching Insights
+        </option>
+      </select>
+    </div>
+
+    <button type="submit" 
+            class="w-full md:w-auto py-3 px-8 text-base font-bold text-white bg-[#6A1B9A] rounded-lg cursor-pointer transition hover:bg-purple-800 hover:-translate-y-0.5">
+            Search
+    </button>
+
+    {% if user.is_authenticated %}
+      <a href="#" id="addBlogBtn" 
+         class="w-full md:w-auto py-3 px-6 text-base font-bold text-black bg-[#FFED2C] rounded-lg cursor-pointer transition no-underline hover:bg-yellow-500 hover:-translate-y-0.5 whitespace-nowrap text-center">
+         + Add Blog
+      </a>
+    {% endif %}
+  </form>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="blogGrid">
     {% for article in articles %}
       <div class="bg-white rounded-lg overflow-hidden shadow-md border border-gray-100 transition hover:-translate-y-1 hover:shadow-lg flex flex-col">
         <article class="flex flex-col flex-grow">
@@ -50,10 +93,13 @@
         {% endif %}
       </div>
     {% empty %}
-      <p>No blog posts available yet.</p>
+      {% if search_query or category_filter %}
+        <p>No articles found !</p>
+      {% else %}
+        <p>No blog posts available yet.</p>
+      {% endif %}
     {% endfor %}
   </div>
-
 </main>
 
 <div id="addBlogModal" class="hidden fixed inset-0 w-screen h-screen bg-black/40 z-[1001] overflow-y-auto items-center justify-center p-5">
@@ -82,7 +128,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     
     const addBlogModal = document.getElementById('addBlogModal');
-    const addBlogBtn = document.getElementById('addBlogBtn'); 
+    const addBlogBtn = document.getElementById('addBlogBtn');
     const closeAddBlogModal = document.getElementById('closeAddBlogModal');
     const addBlogFormContainer = document.getElementById('addBlogFormContainer');
     const addBlogFormMsg = document.getElementById('addBlogFormMsg');
@@ -119,7 +165,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 .then(data => { 
                     if(data.html) {
                         addBlogFormContainer.innerHTML = data.html; 
-                        attachFormHandler(addBlogFormContainer, addBlogFormMsg, addBlogModal); 
+                        attachFormHandler(addBlogFormContainer.querySelector('form'), addBlogFormMsg, addBlogModal); 
                         applyTailwindToForm(addBlogFormContainer);
                     } else { addBlogFormContainer.innerHTML = '<p>Error: Could not load form.</p>'; }
                 })
@@ -129,8 +175,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     if (blogGrid) {
         blogGrid.addEventListener('click', function(e) {
-            const editButton = e.target.closest('.btn-edit-card');
-            const deleteButton = e.target.closest('.btn-delete-card');
+            const editButton = e.target.closest('button[data-id].bg-transparent');
+            const deleteButton = e.target.closest('button[data-id].text-red-600');
 
             if (deleteButton) {
                 e.preventDefault(); 
@@ -163,7 +209,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 .then(data => {
                     if (data.html) {
                         editBlogFormContainer.innerHTML = data.html;
-                        attachFormHandler(editBlogFormContainer, editBlogFormMsg, editBlogModal);
+                        attachFormHandler(editBlogFormContainer.querySelector('form'), editBlogFormMsg, editBlogModal);
                         applyTailwindToForm(editBlogFormContainer);
                     } else { editBlogFormContainer.innerHTML = '<p>Sorry, edit form could not be loaded.</p>'; }
                 })
@@ -183,23 +229,19 @@ document.addEventListener("DOMContentLoaded", function() {
         formContainer.querySelectorAll('input:not([type="checkbox"]), select, textarea').forEach(input => {
             input.classList.add('w-full', 'p-2.5', 'border', 'border-gray-300', 'rounded-md', 'box-border', 'text-base', 'focus:border-purple-500', 'focus:ring', 'focus:ring-purple-200', 'focus:outline-none');
             if(input.tagName === 'SELECT') {
-                input.classList.add('appearance-none', 'bg-white', 'tailwind-search-input');
+                input.classList.add('tailwind-select-arrow', 'bg-white');
             }
             if(input.tagName === 'TEXTAREA') {
                 input.setAttribute('rows', '6');
             }
         });
+        formContainer.querySelectorAll('button[type="submit"]').forEach(button => {
+             button.classList.add('w-full', 'mt-4', 'bg-purple-700', 'text-white', 'p-3', 'border-none', 'rounded-lg', 'cursor-pointer', 'font-bold', 'transition', 'hover:bg-purple-800', 'hover:-translate-y-0.5');
+        });
     }
 
-    function attachFormHandler(formContainer, msgContainer, modalInstance) {
-        const form = formContainer.querySelector('form'); 
+    function attachFormHandler(form, msgContainer, modalInstance) {
         if (!form) return;
-
-        const submitButton = form.querySelector('button[type="submit"]');
-        if(submitButton) {
-            submitButton.classList.add('w-full', 'mt-4', 'bg-purple-700', 'text-white', 'p-3', 'border-none', 'rounded-lg', 'cursor-pointer', 'font-bold', 'transition', 'hover:bg-purple-800', 'hover:-translate-y-0.5');
-        }
-
         form.onsubmit = function(e) {
             e.preventDefault();
             msgContainer.textContent = '';
@@ -219,8 +261,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 } else {
                     msgContainer.style.color = '#b00';
                     msgContainer.textContent = 'Please correct the errors in the form.';
-                    
-                    if (res.errors && typeof res.errors === 'string') {
+                    if (typeof res.errors === 'string') {
                          try { 
                             const errors = JSON.parse(res.errors); 
                             form.querySelectorAll('.form-error').forEach(el => el.remove());

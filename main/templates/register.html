@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>PadelinAja — Register</title>
-    {% load static %} {# Load static files tag #}
+    {% load static %}
 
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;500;700&display=swap" rel="stylesheet">
 
@@ -98,7 +98,6 @@
             <div class="card">
                 <div class="header">
                     <div class="brand">
-                        {# Ensure the path to your logo is correct #}
                         <img src="{% static 'image/PadelinAja Logo.png' %}" alt="PadelinAja logo">
                     </div>
                     <h1 class="title">Welcome to the Community!</h1>
@@ -106,7 +105,7 @@
                 </div>
 
                 <form id="registerForm" class="grid" method="post" action="{% url 'main:register' %}">
-                    {% csrf_token %} {# Django CSRF token #}
+                    {% csrf_token %}
                     <div id="registerError" class="error" role="alert"></div>
 
                     <div>
@@ -116,7 +115,6 @@
                         </div>
                     </div>
 
-                    {# ADD EMAIL FIELD - Assuming your backend expects 'email' #}
                     <div>
                         <label for="id_email">Email</label>
                         <div class="input">
@@ -127,22 +125,17 @@
                     <div>
                         <label for="id_password1">Password</label>
                         <div class="input">
-                            {# Changed name to password to match simple view or use password1 if using Django Auth forms #}
                             <input id="id_password1" name="password" type="password" required autocomplete="new-password" placeholder="••••••••">
-                            <button type="button" class="toggle" data-toggle="#id_password1">Show</button> {# Default text to Show #}
+                            <button type="button" class="toggle" data-toggle="#id_password1">Show</button>
                         </div>
-                        {# You might want password validation hints here if needed #}
                         </div>
 
-                    {# REMOVED Password Confirmation - Simple view doesn't handle it #}
-                    {# If your view DOES handle password confirmation (password1/password2), keep this block #}
                     <button type="submit" class="primary">Create an account</button>
                 </form>
             </div>
         </section>
 
         <aside class="hero" aria-hidden="true">
-             {# Ensure the path to your image is correct #}
             <img src="{% static 'image/register.png' %}" alt="Padel players illustration">
         </aside>
     </main>
@@ -159,22 +152,20 @@
         if (form) {
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                errorBox.style.display = 'none'; 
-                errorBox.textContent = ''; 
+                errorBox.style.display = 'none';
+                errorBox.textContent = '';
 
                 try {
                     const response = await fetch(form.action, {
                         method: 'POST',
                         headers: {
                             'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRFToken': getCsrfToken() 
+                            'X-CSRFToken': getCsrfToken()
                         },
                         body: new FormData(form),
-                        
                     });
 
                     if (!response.ok) {
-                        
                         let errorData;
                         try {
                             errorData = await response.json();

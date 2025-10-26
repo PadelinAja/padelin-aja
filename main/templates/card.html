@@ -14,7 +14,6 @@
   .card:hover {
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   }
-
   .card-thumbnail {
     position: relative;
     padding-top: 56.25%;
@@ -51,7 +50,6 @@
     font-weight: 700;
     text-transform: capitalize;
   }
-
   .card-content {
     padding: 20px;
     flex-grow: 1;
@@ -98,7 +96,6 @@
   }
   .card-description .venue-detail { display: block; margin-bottom: 4px; font-size: 0.9rem; }
   .card-description .venue-venue { display: block; margin-top: 8px; font-size: 0.9rem; color: #777; }
-
   .card-rating {
     display: flex;
     align-items: center;
@@ -111,7 +108,6 @@
     margin-right: 8px;
     letter-spacing: 1px;
   }
-
   .card-footer {
     border-top: 1px solid #f0f0f0;
     padding-top: 16px;
@@ -148,7 +144,6 @@
   .card-edit-btn:hover { background-color: #eee; color: #333; }
   .card-delete-btn { color: #D9534F; }
   .card-delete-btn:hover { background-color: #fdd; color: #D9534F; }
-
 </style>
 
 <article class="card" data-type="{{ item.type }}" data-id="{{ item.id }}">
@@ -194,9 +189,7 @@
 
     <h3 class="card-title">
       <a href="{% if item.detail_url_name %}{% url item.detail_url_name item.id %}{% else %}#{% endif %}">
-        
         {% if item.name %}{{ item.name }}{% elif item.title %}{{ item.title }}{% else %}No Title{% endif %}
-
       </a>
     </h3>
 

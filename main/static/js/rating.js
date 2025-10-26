@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
             highlightStars(currentScore, 'selected');
         });
         star.addEventListener("click", function () {
-            currentScore = this.dataset.score; 
+            currentScore = this.dataset.score;
             highlightStars(currentScore, 'selected');
         });
     });
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     ratingForm.addEventListener("submit", function (e) {
-        e.preventDefault(); 
+        e.preventDefault();
         
         const name = nameBox.value;
         const comment = commentBox.value;
@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(res => res.json())
         .then(data => {
-            if (data.message) { 
+            if (data.message) {
                 alert(data.message);
                 location.reload();
             } else {

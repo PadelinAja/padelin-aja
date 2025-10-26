@@ -13,7 +13,7 @@
       font-family: inherit; /* Ensure form elements use the page font */
       font-size: 1rem;
   }
-  /* Style specifically for select dropdowns (like category) */
+  /* Style specifically for select dropdowns if needed */
   .form-group select {
       appearance: none; 
       background-color: white;
@@ -26,7 +26,7 @@
   .form-error { color: #b00; font-size: 0.85rem; margin-top: 4px; }
 </style>
 
-<form action="{{ form_action_url|default_if_none:'' }}{% if not form_action_url %}{% url 'main:ajax_article_form' %}{% endif %}" method="post" id="articleForm">
+<form action="{{ form_action_url|default_if_none:'' }}{% if not form_action_url %}{% url 'main:ajax_event_form' %}{% endif %}" method="post" id="eventForm">
   {% csrf_token %}
   
   {% for field in form %}
@@ -37,6 +37,6 @@
   {% endfor %}
 
   <button type="submit">
-    {% if form_action_url %}Update Post{% else %}Submit Post{% endif %}
+    {% if form_action_url %}Update Event{% else %}Submit Event{% endif %}
   </button>
 </form>
