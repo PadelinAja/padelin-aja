@@ -1,0 +1,1 @@
+# No Django admin used in this project

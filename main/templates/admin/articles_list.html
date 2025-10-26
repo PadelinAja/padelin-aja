@@ -1,0 +1,46 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<div class="admin-container">
+  <div class="admin-header">
+    <h1 class="admin-title">Manage <span>Articles</span></h1>
+    <p>View, edit, and manage all blog articles in the system.</p>
+  </div>
+
+  <div class="table-container">
+    <div style="padding: 20px 20px 0 20px">
+      <a href="/admin/articles/add/" class="btn btn-primary">Add New Article</a>
+    </div>
+    
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Published Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in articles %}
+        <tr>
+          <td>{{ a.title }}</td>
+          <td>{% if a.user %}{{ a.user.username }}{% endif %}</td>
+          <td>{{ a.published_date|date:"M d, Y" }}</td>
+          <td class="action-buttons">
+            <a href="/admin/articles/edit/{{ a.id }}/" class="btn btn-secondary btn-sm">Edit</a>
+            <a href="/admin/articles/delete/{{ a.id }}/" class="btn btn-danger btn-sm">Delete</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" style="text-align: center; padding: 32px;">No articles available. Add your first article to get started!</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <a href="/admin/" class="btn btn-secondary">← Back to Dashboard</a>
+</div>
+{% endblock %}

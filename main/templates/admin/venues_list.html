@@ -1,0 +1,46 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<div class="admin-container">
+  <div class="admin-header">
+    <h1 class="admin-title">Manage <span>Venues</span></h1>
+    <p>View, edit, and manage all venues in the system.</p>
+  </div>
+
+  <div class="table-container">
+    <div style="padding: 20px 20px 0 20px">
+      <a href="/admin/venues/add/" class="btn btn-primary">Add New Venue</a>
+    </div>
+    
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Venue Name</th>
+          <th>Location</th>
+          <th>Owner</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in venues %}
+        <tr>
+          <td>{{ v.name }}</td>
+          <td>{{ v.city }}</td>
+          <td>{% if v.user %}{{ v.user.username }}{% endif %}</td>
+          <td class="action-buttons">
+            <a href="/admin/venues/edit/{{ v.id }}/" class="btn btn-secondary btn-sm">Edit</a>
+            <a href="/admin/venues/delete/{{ v.id }}/" class="btn btn-danger btn-sm">Delete</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" style="text-align: center; padding: 32px;">No venues available. Add your first venue to get started!</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <a href="/admin/" class="btn btn-secondary">← Back to Dashboard</a>
+</div>
+{% endblock %}

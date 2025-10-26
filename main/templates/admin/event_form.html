@@ -1,0 +1,51 @@
+{% extends 'admin/base_admin.html' %}
+{% load form_tags %}
+
+{% block content %}
+<div class="admin-container">
+  <div class="admin-header">
+    <h1 class="admin-title">{{ action }} <span>Event</span></h1>
+    <p>{% if action == 'Add' %}Schedule a new event{% else %}Update event details{% endif %}</p>
+  </div>
+
+  <div class="form-container">
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-group">
+          <label class="form-label">{{ field.label }}</label>
+          {{ field.errors }}
+          {{ field|addclass:'form-control' }}
+          {% if field.help_text %}
+            <small class="text-muted">{{ field.help_text }}</small>
+          {% endif %}
+        </div>
+      {% endfor %}
+      
+      <div style="display: flex; gap: 16px; margin-top: 32px;">
+    <button class="btn btn-primary" type="submit">{{ action }} Event</button>
+  <a class="btn btn-secondary" href="/admin/events/">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block style %}
+{{ block.super }}
+<style>
+  textarea.form-control {
+    min-height: 120px;
+  }
+  .errorlist {
+    color: #D9534F;
+    font-size: 0.875rem;
+    margin: 4px 0;
+    padding: 0;
+    list-style: none;
+  }
+  input[type="datetime-local"].form-control {
+    font-family: inherit;
+  }
+</style>
+{% endblock %}

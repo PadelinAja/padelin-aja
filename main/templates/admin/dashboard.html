@@ -1,0 +1,32 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<div class="admin-container">
+  <div class="admin-header">
+    <h1 class="admin-title">Admin <span>Dashboard</span></h1>
+    <p>Welcome back, <strong>{{ request.user.username }}</strong>! Manage your venues, articles, and events here.</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3>Venues</h3>
+      <p>{{ counts.venues }} total venues</p>
+      <a href="/admin/venues/" class="btn btn-primary btn-sm">Manage Venues</a>
+    </div>
+
+    <div class="stat-card">
+      <h3>Articles</h3>
+      <p>{{ counts.articles }} total articles</p>
+      <a href="/admin/articles/" class="btn btn-primary btn-sm">Manage Articles</a>
+    </div>
+
+    <div class="stat-card">
+      <h3>Events</h3>
+      <p>{{ counts.events }} total events</p>
+      <a href="/admin/events/" class="btn btn-primary btn-sm">Manage Events</a>
+    </div>
+  </div>
+
+  <a href="/admin/logout/" class="btn btn-secondary">Sign Out</a>
+</div>
+{% endblock %}

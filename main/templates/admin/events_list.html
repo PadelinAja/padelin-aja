@@ -1,0 +1,46 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<div class="admin-container">
+  <div class="admin-header">
+    <h1 class="admin-title">Manage <span>Events</span></h1>
+    <p>View, edit, and manage all events in the system.</p>
+  </div>
+
+  <div class="table-container">
+    <div style="padding: 20px 20px 0 20px">
+      <a href="/admin/events/add/" class="btn btn-primary">Add New Event</a>
+    </div>
+    
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Event Name</th>
+          <th>Date</th>
+          <th>Venue</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in events %}
+        <tr>
+          <td>{{ e.name }}</td>
+          <td>{{ e.date|date:"M d, Y" }}</td>
+          <td>{% if e.venue %}{{ e.venue.name }}{% endif %}</td>
+          <td class="action-buttons">
+            <a href="/admin/events/edit/{{ e.id }}/" class="btn btn-secondary btn-sm">Edit</a>
+            <a href="/admin/events/delete/{{ e.id }}/" class="btn btn-danger btn-sm">Delete</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" style="text-align: center; padding: 32px;">No events available. Add your first event to get started!</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <a href="/admin/" class="btn btn-secondary">← Back to Dashboard</a>
+</div>
+{% endblock %}
