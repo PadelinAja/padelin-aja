@@ -27,10 +27,12 @@ class Venue(models.Model):
 class Article(models.Model):
 
     class CategoryChoices(models.TextChoices):
-        BEGINNER = 'Beginner Guides', 'Beginner Guides'
-        TECHNIQUE = 'Technique & Strategy', 'Technique & Strategy'
-        FITNESS = 'Fitness & Warm-Ups', 'Fitness & Warm-Ups'
-        COACHING = 'Coaching Insights', 'Coaching Insights'
+        TIPS = 'Padel Tips & Training', 'Padel Tips & Training'
+        VENUESFACILITIES = 'Venues & Facilities', 'Venues & Facilities'
+        COMMUNITY = 'Community & Players', 'Community & Players'
+        TOURNAMENTS = 'Tournaments & Events', 'Tournaments & Events'
+        NEWSINDUSTRY = 'News & Industry Updates', 'News & Industry Updates'
+        LIFESTYLE = 'Lifestyle & Wellness', 'Lifestyle & Wellness'
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=200)
@@ -38,7 +40,8 @@ class Article(models.Model):
     category = models.CharField(
         max_length=50,
         choices=CategoryChoices.choices,
-        default=CategoryChoices.BEGINNER
+        # CORRECTED: Using the .value of a valid member (TIPS)
+        default=CategoryChoices.TIPS.value
     )
     published_date = models.DateTimeField(auto_now_add=True)
     image_url = models.URLField(blank=True, null=True)
