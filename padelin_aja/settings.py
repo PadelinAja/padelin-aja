@@ -32,6 +32,8 @@ INSTALLED_APPS = [
     'django.contrib.humanize'
 ]
 
+#RESTART
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
