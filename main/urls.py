@@ -16,4 +16,8 @@ urlpatterns = [
     path('ajax_edit/<str:type>/<uuid:id>/', views.ajax_edit, name='ajax_edit'),
     path('ajax_cards/', views.ajax_cards, name='ajax_cards'),
     path('rate/', views.rate_item, name='rate_item'),
+    path('profile/edit/', views.edit_profile, name='edit_profile'),
+    path('profile/', views.profile_json, name='profile_json'),
+    path('profile/edit-json/', views.edit_profile_json, name='edit_profile_json'),
+    path('logout-json/', views.logout_json, name='logout_json'),
 ]

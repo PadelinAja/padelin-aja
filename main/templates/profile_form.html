@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-slate-100 py-10">
+  <div class="max-w-4xl mx-auto px-4 space-y-6">
+
+    <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">
+      Edit Profile
+    </h1>
+
+    {# --- Current profile summary --- #}
+    <section class="bg-white shadow rounded-2xl p-6 space-y-4">
+      <div class="flex items-center gap-4">
+        {% if profile.profile_picture %}
+          <img
+            src="{{ profile.profile_picture.url }}"
+            alt="Profile picture"
+            class="h-20 w-20 rounded-full object-cover border border-slate-200"
+          >
+        {% else %}
+          <div class="h-20 w-20 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 text-xl font-bold">
+            {{ request.user.username|first|upper }}
+          </div>
+        {% endif %}
+
+        <div>
+          <p class="text-sm font-semibold text-slate-700">
+            {{ request.user.get_full_name|default:request.user.username }}
+          </p>
+          <p class="text-xs text-slate-500">
+            {{ request.user.email }}
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-700 mt-4">
+        <div>
+          <p class="font-medium">Phone Number</p>
+          <p class="text-slate-500">
+            {{ profile.phone_number|default:"-" }}
+          </p>
+        </div>
+        <div>
+          <p class="font-medium">Hobbies</p>
+          <p class="text-slate-500">
+            {{ profile.hobbies|default:"-" }}
+          </p>
+        </div>
+      </div>
+
+      <div class="text-sm mt-3">
+        <p class="font-medium text-slate-700 mb-1">description</p>
+        <p class="whitespace-pre-line border rounded-xl p-3 bg-slate-50 text-slate-600 min-h-[3rem]">
+          {{ profile.description|default:"(no description yet)" }}
+        </p>
+      </div>
+    </section>
+
+    {# --- Edit form --- #}
+    <section class="bg-white shadow rounded-2xl p-6">
+      <h2 class="text-lg font-semibold text-slate-800 mb-4">
+        Update Profile
+      </h2>
+
+      <form method="post" enctype="multipart/form-data" class="space-y-5">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="border border-red-200 bg-red-50 text-red-700 text-sm rounded-xl p-3 mb-3">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <div class="space-y-1">
+          <label class="block text-sm font-medium text-slate-700">
+            Phone Number
+          </label>
+          {{ form.phone_number }}
+          {% if form.phone_number.errors %}
+            <p class="text-xs text-red-600 mt-1">{{ form.phone_number.errors }}</p>
+          {% endif %}
+        </div>
+
+        <div class="space-y-1">
+          <label class="block text-sm font-medium text-slate-700">
+            Hobbies
+          </label>
+          {{ form.hobbies }}
+          {% if form.hobbies.errors %}
+            <p class="text-xs text-red-600 mt-1">{{ form.hobbies.errors }}</p>
+          {% endif %}
+        </div>
+
+        <div class="space-y-1">
+          <label class="block text-sm font-medium text-slate-700">
+            description
+          </label>
+          {{ form.description }}
+          {% if form.description.errors %}
+            <p class="text-xs text-red-600 mt-1">{{ form.description.errors }}</p>
+          {% endif %}
+        </div>
+
+        <div class="space-y-1">
+          <label class="block text-sm font-medium text-slate-700">
+            Profile Picture
+          </label>
+          {{ form.profile_picture }}
+          {% if form.profile_picture.errors %}
+            <p class="text-xs text-red-600 mt-1">{{ form.profile_picture.errors }}</p>
+          {% endif %}
+        </div>
+
+        <button
+          type="submit"
+          class="inline-flex items-center px-4 py-2 rounded-xl bg-purple-600 text-white text-sm font-semibold shadow hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+        >
+          Save Profile
+        </button>
+      </form>
+    </section>
+
+  </div>
+</div>
+{% endblock content %}

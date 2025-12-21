@@ -14,6 +14,13 @@ from django.contrib.contenttypes.models import ContentType
 from main.models import Venue, Article, Events, Rating, Comment
 from main.forms import VenueForm, ArticleForm, EventForm
 
+from main.forms import VenueForm, ArticleForm, EventForm, ProfileForm
+
+from main.models import Venue, Article, Events, Rating, UserProfile
+
+from django.utils import timezone
+
+
 
 # =======================================
 # ===           MAIN VIEWS             ===
@@ -476,3 +483,82 @@ def rate_item(request):
     except Exception as e:
         print(f"Error saving rating: {e}")
         return JsonResponse({'error': 'Could not save rating.'}, status=500)
+        try:
+            Rating.objects.create(
+                user=None,
+                anonymous_name=anonymous_name,
+                content_type=content_type, 
+                object_id=item_id,
+                score=score,
+                comment=comment_text
+            )
+            
+            avg = Rating.objects.filter(
+                content_type=content_type, object_id=item_id
+            ).aggregate(avg=Avg('score'))['avg'] or 0
+            return JsonResponse({'message': 'Rating saved!', 'average': round(avg, 1)})
+        
+        except Exception as e:
+            print(f"Error saving rating: {e}")
+            return JsonResponse({'error': 'Could not save rating.'}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method.'}, status=405)
+
+@login_required
+def edit_profile(request):
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect("main:edit_profile")
+    else:
+        form = ProfileForm(instance=profile)
+
+    context = {
+        "form": form,
+        "profile": profile,
+        "active_page": "profile",  
+    }
+    return render(request, "profile_form.html", context)
+
+@login_required
+def profile_json(request):
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
+    return JsonResponse({
+        "username": request.user.username,
+        "email": request.user.email,
+        "phone_number": profile.phone_number,
+        "hobbies": profile.hobbies,
+        "competence": profile.competence,
+        "profile_picture": profile.profile_picture.url if profile.profile_picture else None,
+    })
+
+@csrf_exempt
+@login_required
+def edit_profile_json(request):
+    if request.method != "POST":
+        return JsonResponse({"success": False, "errors": "POST required."}, status=405)
+
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
+    profile.phone_number = request.POST.get("phone_number", profile.phone_number)
+    profile.hobbies = request.POST.get("hobbies", profile.hobbies)
+    profile.competence = request.POST.get("competence", profile.competence)
+
+    if "profile_picture" in request.FILES:
+        profile.profile_picture = request.FILES["profile_picture"]
+
+    profile.save()
+
+    return JsonResponse({"success": True})
+
+@csrf_exempt
+def logout_json(request):
+    if request.method != "POST":
+        return JsonResponse({"success": False, "errors": "POST required."}, status=405)
+
+    logout(request)
+    return JsonResponse({"success": True})
