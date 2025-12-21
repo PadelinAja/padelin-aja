@@ -23,4 +23,10 @@ urlpatterns = [
     path('ajax_edit/<str:type>/<uuid:id>/', views.ajax_edit, name='ajax_edit'),
     path('ajax_cards/', views.ajax_cards, name='ajax_cards'),
     path('rate/', views.rate_item, name='rate_item'),
+    path('api/venues/', views.show_venues_json, name='show_venues_json'),
+    path('api/events/', views.show_events_json, name='show_events_json'),
+    path('create-event-flutter/', views.create_event_flutter, name='create_event_flutter'),
+    path('create-venue-flutter/', views.create_venue_flutter, name='create_venue_flutter'),
+    path('delete-event-flutter/<int:event_id>/', views.delete_event_flutter, name='delete_event_flutter'),
+    path('update-event-flutter/<int:event_id>/', views.update_event_flutter, name='update_event_flutter'),
 ]
