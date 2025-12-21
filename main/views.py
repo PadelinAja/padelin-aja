@@ -9,12 +9,10 @@ from django.views.decorators.http import require_POST
 from django.utils import timezone
 from django.db.models import Avg, Q
 from django.contrib.contenttypes.models import ContentType
-
 from main.forms import VenueForm, ArticleForm, EventForm
-
 from main.models import Venue, Article, Events, Rating
-
 from django.utils import timezone
+import json
 
 
 
@@ -89,6 +87,53 @@ def create_venue(request):
     context = {'form': form, 'active_page': 'venues'}
     return render(request, "create_venue.html", context)
 
+@csrf_exempt
+def create_venue_flutter(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            
+            # 1. User Logic (Pick Admin if anonymous)
+            user = request.user
+            if not user.is_authenticated:
+                user = User.objects.filter(is_superuser=True).first()
+            if not user:
+                return JsonResponse({"status": "error", "message": "No admin user found"}, status=500)
+
+            # 2. Create Venue with DEFAULTS for everything
+            # This prevents "NOT NULL constraint failed" errors
+            new_venue = Venue.objects.create(
+                user=user,
+                name=data.get("name", "Untitled Venue"),
+                city=data.get("city", "Jakarta"),
+                address=data.get("address", "No Address"),
+                contact=data.get("contact", "000-000-000"),
+                price_range=data.get("price_range", "100k-200k"),
+                
+                # OPTIONAL FIELDS (We give them empty strings if missing)
+                website=data.get("website", ""),
+                facilities=data.get("facilities", "Standard Courts"),
+                image_url=data.get("image_url", "https://example.com/default.jpg"),
+                
+                # These might exist in your model, so we default them too
+                image_url_2="", 
+                image_url_3="", 
+                image_url_4="", 
+                image_url_5="" 
+            )
+            
+            new_venue.save()
+            return JsonResponse({"status": "success"}, status=200)
+
+        except Exception as e:
+            # Print the REAL error to your terminal so you can see it
+            print(f"========== ERROR ==========")
+            print(e) 
+            print("===========================")
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+    return JsonResponse({"status": "error"}, status=401)
+
 def show_venues(request):
     query = request.GET.get('q', '')
     location = request.GET.get('location', '')
@@ -149,6 +194,25 @@ def show_venue(request, id):
     }
     return render(request, "venue_detail.html", context)
 
+def show_venues_json(request):
+    venues = Venue.objects.all()
+    
+    data = []
+    for v in venues:
+        item = {
+            "id": str(v.id),
+            "name": v.name,
+            "city": v.city,
+            "address": v.address,
+            "price_range": getattr(v, 'price_range', 'N/A'),
+            "image_url": getattr(v, 'image_url', '') 
+        }
+        data.append(item)
+    
+    # 3. Return JSON response
+    return JsonResponse(data, safe=False)
+
+@login_required
 def ajax_venue_form(request):
     if request.method == 'POST':
         form = VenueForm(request.POST)
@@ -214,6 +278,7 @@ def show_article(request, id):
     context = {'article': article, 'avg_rating': round(avg_rating, 1), 'active_page': 'blogs'}
     return render(request, "article_detail.html", context)
 
+@login_required
 def ajax_article_form(request):
     if request.method == 'POST':
         form = ArticleForm(request.POST)
@@ -267,6 +332,50 @@ def create_event(request):
     context = {'form': form, 'active_page': 'events'}
     return render(request, "create_event.html", context)
 
+@csrf_exempt
+def create_event_flutter(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            
+            # 1. User Fallback Logic (Crucial Fix)
+            user = request.user
+            if not user.is_authenticated:
+                user = User.objects.filter(is_superuser=True).first()
+            if not user:
+                 return JsonResponse({"status": "error", "message": "No admin user found"}, status=500)
+
+            # 2. Get the Venue
+            venue_id = data.get("venue_id")
+            if not venue_id:
+                return JsonResponse({"status": "error", "message": "Venue ID is required"}, status=400)
+                
+            venue = Venue.objects.get(id=venue_id)
+
+            # 3. Create the Event
+            new_event = Events.objects.create(
+                user=user,  # <--- Now uses the fallback user
+                name=data["name"],
+                date=data["date"], # Django handles ISO strings automatically
+                price=int(data["price"]),
+                venue=venue,
+                image_url=data.get("image_url", ""),
+                # description removed as per your earlier request
+            )
+
+            return JsonResponse({"status": "success"}, status=200)
+            
+        except Venue.DoesNotExist:
+             return JsonResponse({"status": "error", "message": "Venue not found"}, status=404)
+        except Exception as e:
+            # Print the real error to your terminal
+            print(f"========== EVENT ERROR ==========")
+            print(e)
+            print("=================================")
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+    
+    return JsonResponse({"status": "error"}, status=401)
+
 def show_event(request, id):
     event = get_object_or_404(Events, pk=id)
     avg_rating = Rating.objects.filter(
@@ -275,6 +384,32 @@ def show_event(request, id):
     context = {'event': event, 'avg_rating': round(avg_rating, 1), 'active_page': 'events'}
     return render(request, "event_detail.html", context)
 
+def show_events_json(request):
+    events = Events.objects.all().order_by('date')
+    
+    data = []
+    for e in events:
+        try:
+            data.append({
+                "id": str(e.id),
+                "name": e.name,
+                "date": e.date.isoformat() if e.date else None,
+                "price": e.price,
+                "type": getattr(e, 'type', 'Fun Match'),
+                "image_url": getattr(e, 'image_url', ''),
+                
+                "venue": {
+                    "name": e.venue.name if e.venue.name else "Unknown Venue",
+                    "city": e.venue.city.strip() if e.venue.city else "Unknown City", # .strip() removes accidental spaces
+                    "address": e.venue.address if e.venue.address else "-"
+                }
+            })
+        except Exception as err:
+            print(f"Skipping broken event: {err}")
+            
+    return JsonResponse(data, safe=False)
+
+@login_required
 def ajax_event_form(request):
     if request.method == 'POST':
         form = EventForm(request.POST)
