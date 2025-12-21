@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from main.models import Venue, Article, Events
+from django.utils import timezone
 
 form_control_attrs = {'class': 'form-control'}
 form_control_textarea_attrs = {'class': 'form-control', 'rows': 4}
@@ -52,7 +53,7 @@ class ArticleForm(ModelForm):
 class EventForm(ModelForm):
     class Meta:
         model = Events
-        fields = ["name", "type", "date", "venue", "price", "description", "image_url"]
+        fields = ["name", "type", "date", "venue", "price", "image_url"]
 
         widgets = {
             'name': forms.TextInput(attrs={**form_control_attrs, 'placeholder': 'e.g., Morning Fun Match'}),
@@ -60,7 +61,6 @@ class EventForm(ModelForm):
             'date': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
             'venue': forms.Select(attrs={'class': 'form-control'}),
             'price': forms.NumberInput(attrs={**form_control_attrs, 'placeholder': 'e.g., 150000'}),
-            'description': forms.Textarea(attrs={**form_control_textarea_attrs, 'placeholder': 'Event description...'}),
             'image_url': forms.URLInput(attrs={**form_control_url_attrs, 'placeholder': 'https://... (Optional)'}),
         }
 
@@ -70,6 +70,13 @@ class EventForm(ModelForm):
             'date': 'Date & Time',
             'venue': 'Venue',
             'price': 'Price (Rp)',
-            'description': 'Description',
             'image_url': 'Image URL (Optional)',
         }
+
+    def clean_date(self):
+        date = self.cleaned_data['date']
+        
+        if date < timezone.now():
+            raise forms.ValidationError("You cannot schedule an event in the past!")
+            
+        return date
